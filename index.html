@@ -375,6 +375,18 @@
     setTimeout(() => cardEl.classList.remove(type), ms);
     return ms;
   }
+function flashScreen(isCorrect) {
+  const el = document.getElementById('screenFlash');
+  if (!el) return;
+
+  el.classList.remove('green', 'red');
+  void el.offsetWidth; // restart animation reliably
+  el.classList.add(isCorrect ? 'green' : 'red');
+
+  setTimeout(() => {
+    el.classList.remove('green', 'red');
+  }, 2000);
+}
 
   // ---------- State ----------
   let payloadSource = "";
