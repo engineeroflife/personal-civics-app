@@ -1,109 +1,591 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Civics Practice</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0C1D3F" />
+  <title>Civics Practice</title>
 
-<style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial;
-  margin:0;
-  background:#fff;
-  color:#000;
-}
-header{
-  padding:16px;
-  border-bottom:1px solid #ddd;
-}
-h1{margin:0;font-size:1.4rem;}
-main{padding:16px;max-width:720px;margin:auto;}
-.card{
-  border:1px solid #ddd;
-  border-radius:16px;
-  padding:20px;
-  margin-top:16px;
-}
-.buttons{
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-}
-button{
-  flex:1;
-  padding:12px;
-  font-size:1rem;
-  border-radius:12px;
-  border:1px solid #000;
-  background:#fff;
-}
-button.primary{
-  background:#000;
-  color:#fff;
-}
-small{color:#555;}
-</style>
+  <style>
+    :root{
+      --navy:#0C1D3F;
+      --red:#BF1E2E;
+      --bg:#ffffff;
+      --panel:#f6f7f9;
+      --ink:#000000;
+      --muted:#5b6472;
+      --stroke:rgba(0,0,0,.10);
+      --shadow:0 10px 26px rgba(0,0,0,.10);
+      --radius:18px;
+      --max:920px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--ink);
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:saturate(180%) blur(14px);
+      border-bottom:1px solid var(--stroke);
+      padding:14px 16px;
+    }
+    .wrap{max-width:var(--max); margin:0 auto;}
+    .brandRow{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+    .brandLeft{display:flex; align-items:center; gap:12px; min-width:260px;}
+    .flag{
+      display:flex; align-items:center; gap:10px;
+    }
+    .flag .bar{height:10px; border-radius:999px;}
+    .flag .navy{width:52px; background:var(--navy);}
+    .flag .red{width:28px; background:var(--red);}
+    .titles .title{font-weight:800; letter-spacing:.2px; font-size:1.2rem;}
+    .titles .sub{color:var(--muted); font-size:.92rem; margin-top:2px;}
+    .controls{
+      display:flex; flex-wrap:wrap;
+      gap:10px; align-items:center; justify-content:flex-end;
+    }
+    select, .chipBtn{
+      height:38px;
+      border:1px solid var(--stroke);
+      border-radius:12px;
+      background:#fff;
+      padding:0 12px;
+      font-size:.95rem;
+      color:var(--ink);
+    }
+    .toggle{
+      display:flex; align-items:center; gap:8px;
+      padding:0 10px;
+      height:38px;
+      border:1px solid var(--stroke);
+      border-radius:12px;
+      background:#fff;
+      font-size:.95rem;
+    }
+    .toggle input{transform:scale(1.1)}
+    main{padding:18px 16px;}
+    .view{max-width:var(--max); margin:0 auto;}
+    .hidden{display:none !important;}
+
+    .card{
+      background:#fff;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .cardTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding-bottom:12px;
+      border-bottom:1px solid rgba(0,0,0,.06);
+      margin-bottom:14px;
+    }
+    .meta{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+    .pill{
+      display:inline-flex; align-items:center;
+      height:26px;
+      padding:0 10px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      background:rgba(0,0,0,.03);
+      color:var(--navy);
+      font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.9px;
+    }
+    .pill.star{color:#000;}
+    .dot{color:rgba(0,0,0,.45)}
+    .muted{color:var(--muted)}
+    .questionText{
+      font-size:1.35rem;
+      font-weight:800;
+      line-height:1.25;
+      margin:0;
+    }
+    .answers{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:var(--panel);
+      border:1px solid rgba(0,0,0,.06);
+      line-height:1.55;
+    }
+    .answers .aLine{display:flex; gap:10px; align-items:flex-start; margin:6px 0;}
+    .answers .bullet{
+      width:7px; height:7px;
+      background:var(--red);
+      border-radius:999px;
+      margin-top:9px;
+      flex:0 0 auto;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    button{
+      border:1px solid var(--stroke);
+      background:#fff;
+      color:#000;
+      padding:12px 12px;
+      border-radius:14px;
+      font-size:1rem;
+      cursor:pointer;
+      flex:1 1 140px;
+      min-height:44px;
+    }
+    button.primary{
+      background:var(--navy);
+      color:#fff;
+      border-color:rgba(0,0,0,.0);
+    }
+    button.ghost{
+      background:#fff;
+      color:#000;
+    }
+    button:disabled{opacity:.5; cursor:not-allowed;}
+
+    .footerRow{
+      margin-top:12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap:wrap;
+    }
+    .notice{
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(191,30,46,.25);
+      background:rgba(191,30,46,.06);
+      color:#000;
+    }
+    code{background:rgba(0,0,0,.06); padding:2px 6px; border-radius:8px;}
+
+    .panel{
+      padding:14px;
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      background:var(--panel);
+      margin-bottom:14px;
+    }
+    .panelRow{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .kpis{display:flex; gap:12px; flex-wrap:wrap;}
+    .kpi{font-size:.95rem;}
+    .result{
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+    }
+    .small{font-size:.92rem;}
+  </style>
 </head>
 
 <body>
 <header>
-  <h1>🇺🇸 Civics Practice</h1>
-  <small>Flashcards • Interview Mode • Text-to-Speech</small>
+  <div class="wrap brandRow">
+    <div class="brandLeft">
+      <div class="flag" aria-hidden="true">
+        <span class="bar navy"></span>
+        <span class="bar red"></span>
+      </div>
+      <div class="titles">
+        <div class="title">Civics Practice</div>
+        <div class="sub">Flashcards • Interview Mode • Text-to-Speech</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <select id="mode">
+        <option value="cards">Flashcards</option>
+        <option value="interview">Interview Mode</option>
+      </select>
+
+      <label class="toggle">
+        <input type="checkbox" id="starOnly" />
+        <span>⭐ Only</span>
+      </label>
+
+      <select id="ttsSpeed" title="Text-to-speech speed">
+        <option value="normal">TTS Normal</option>
+        <option value="slow">TTS Slow</option>
+      </select>
+
+      <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
+    </div>
+  </div>
 </header>
 
 <main>
-  <div class="card">
-    <div id="question"></div>
-    <div id="answers" style="display:none;margin-top:10px;"></div>
+  <!-- Flashcards View -->
+  <section id="cardsView" class="view">
+    <div class="card">
+      <div class="cardTop">
+        <div class="meta">
+          <span id="cardLabel" class="pill">QUESTION</span>
+          <span class="dot">•</span>
+          <span id="cardNum" class="muted">#—</span>
+          <span id="cardStar" class="pill star hidden">⭐</span>
+        </div>
+        <button class="ghost" id="flipBtn">Show Answer</button>
+      </div>
 
-    <div class="buttons">
-      <button onclick="prev()">◀</button>
-      <button onclick="speakQuestion()">🔊 Q</button>
-      <button onclick="toggleAnswers()">Show A</button>
-      <button onclick="speakAnswer()">🔊 A</button>
-      <button onclick="next()">▶</button>
+      <p id="qText" class="questionText">Loading questions…</p>
+
+      <div id="aBox" class="answers hidden"></div>
+
+      <div class="btnRow">
+        <button id="prevBtn">◀ Prev</button>
+        <button id="speakQBtn">🔊 Speak Q</button>
+        <button id="speakABtn">🔊 Speak A</button>
+        <button id="nextBtn">Next ▶</button>
+      </div>
+
+      <div class="footerRow">
+        <div class="muted small" id="progressText"></div>
+        <div class="muted small" id="sourceText"></div>
+      </div>
+
+      <div id="loadNotice" class="notice hidden"></div>
     </div>
-  </div>
+  </section>
 
-  <p style="margin-top:12px;">
-    Question <span id="count"></span>
-  </p>
+  <!-- Interview View -->
+  <section id="interviewView" class="view hidden">
+    <div class="panel">
+      <div class="panelRow">
+        <div class="kpis">
+          <div class="kpi">Asked: <b id="asked">0</b>/20</div>
+          <div class="kpi">Correct: <b id="correct">0</b></div>
+          <div class="kpi">Wrong: <b id="wrong">0</b></div>
+        </div>
+        <div class="kpis">
+          <button id="startInterviewBtn" class="primary">Start</button>
+          <button id="reviewMissedBtn" class="ghost hidden">Review Missed</button>
+          <button id="resetInterviewBtn" class="ghost">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardTop">
+        <div class="meta">
+          <span class="pill">QUESTION</span>
+          <span class="dot">•</span>
+          <span id="iNum" class="muted">#—</span>
+        </div>
+        <button class="ghost" id="iSpeakBtn">🔊 Speak</button>
+      </div>
+
+      <p id="iQuestion" class="questionText">Press Start to begin.</p>
+
+      <details class="answers" id="iAnswersWrap">
+        <summary>Show acceptable answers</summary>
+        <div id="iAnswers" style="margin-top:10px;"></div>
+      </details>
+
+      <div class="btnRow">
+        <button id="markWrongBtn">Incorrect</button>
+        <button id="markCorrectBtn" class="primary">Correct</button>
+      </div>
+
+      <div id="result" class="result hidden"></div>
+    </div>
+  </section>
 </main>
 
 <script>
-let data=[],i=0;
+  // ---------- State ----------
+  let payloadSource = "";
+  let allItems = [];
+  let items = [];
+  let idx = 0;
+  let showAnswer = false;
 
-fetch('data/civics_128_2025.json')
-  .then(r=>r.json())
-  .then(j=>{
-    data=j.items;
-    show();
+  // Interview state
+  let interviewQueue = [];
+  let interviewIndex = 0;
+  let asked = 0, correct = 0, wrong = 0;
+  let missed = [];
+
+  // ---------- Elements ----------
+  const modeEl = document.getElementById('mode');
+  const starOnlyEl = document.getElementById('starOnly');
+  const ttsSpeedEl = document.getElementById('ttsSpeed');
+  const reloadBtn = document.getElementById('reloadBtn');
+
+  const cardsView = document.getElementById('cardsView');
+  const interviewView = document.getElementById('interviewView');
+
+  const cardLabel = document.getElementById('cardLabel');
+  const cardNum = document.getElementById('cardNum');
+  const cardStar = document.getElementById('cardStar');
+  const qText = document.getElementById('qText');
+  const aBox = document.getElementById('aBox');
+  const flipBtn = document.getElementById('flipBtn');
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const speakQBtn = document.getElementById('speakQBtn');
+  const speakABtn = document.getElementById('speakABtn');
+  const progressText = document.getElementById('progressText');
+  const sourceText = document.getElementById('sourceText');
+  const loadNotice = document.getElementById('loadNotice');
+
+  const askedEl = document.getElementById('asked');
+  const correctEl = document.getElementById('correct');
+  const wrongEl = document.getElementById('wrong');
+
+  const startInterviewBtn = document.getElementById('startInterviewBtn');
+  const reviewMissedBtn = document.getElementById('reviewMissedBtn');
+  const resetInterviewBtn = document.getElementById('resetInterviewBtn');
+  const iNum = document.getElementById('iNum');
+  const iQuestion = document.getElementById('iQuestion');
+  const iSpeakBtn = document.getElementById('iSpeakBtn');
+  const iAnswersWrap = document.getElementById('iAnswersWrap');
+  const iAnswers = document.getElementById('iAnswers');
+  const markWrongBtn = document.getElementById('markWrongBtn');
+  const markCorrectBtn = document.getElementById('markCorrectBtn');
+  const resultBox = document.getElementById('result');
+
+  // ---------- Helpers ----------
+  function applyFilter() {
+    items = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
+    if (!items.length) {
+      qText.textContent = "No questions found for this filter.";
+      aBox.classList.add('hidden');
+      progressText.textContent = "";
+      return;
+    }
+    idx = 0;
+    showAnswer = false;
+    renderCard();
+  }
+
+  function renderCard() {
+    if (!items.length) return;
+    const it = items[idx];
+    cardNum.textContent = "#" + it.id;
+    cardStar.classList.toggle('hidden', !it.starred);
+
+    qText.textContent = it.question;
+
+    aBox.innerHTML = it.answers.map(a => `
+      <div class="aLine">
+        <span class="bullet"></span>
+        <div>${escapeHtml(a)}</div>
+      </div>`).join("");
+
+    aBox.classList.toggle('hidden', !showAnswer);
+    flipBtn.textContent = showAnswer ? "Hide Answer" : "Show Answer";
+    cardLabel.textContent = showAnswer ? "ANSWER" : "QUESTION";
+
+    progressText.textContent = `Card ${idx + 1} of ${items.length}`;
+    sourceText.textContent = payloadSource ? `Source: ${payloadSource}` : "";
+    prevBtn.disabled = (idx === 0);
+    nextBtn.disabled = (idx === items.length - 1);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+    }[m]));
+  }
+
+  function ttsRate() {
+    return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
+  }
+
+  function speak(text) {
+    if (!text) return;
+    if (!window.speechSynthesis) return alert("Text-to-Speech is not available in this browser.");
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = ttsRate();
+    speechSynthesis.speak(u);
+  }
+
+  // ---------- Data Load ----------
+  async function loadQuestions() {
+    loadNotice.classList.add('hidden');
+    qText.textContent = "Loading questions…";
+    aBox.classList.add('hidden');
+
+    try {
+      // IMPORTANT: filename must match your repo exactly
+      const res = await fetch("data/civics_128_2025.json", { cache: "no-store" });
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+
+      const json = await res.json();
+      if (!json.items || !Array.isArray(json.items)) {
+        throw new Error("JSON format error: expected { items: [...] }");
+      }
+
+      payloadSource = json.source || "";
+      allItems = json.items;
+      applyFilter();
+
+    } catch (err) {
+      console.error(err);
+      loadNotice.classList.remove('hidden');
+      loadNotice.innerHTML = `
+        <b>Questions file not found or not readable.</b><br><br>
+        Make sure this file exists in your repo:<br>
+        <code>data/civics_128_2025.json</code><br><br>
+        Test it by opening:<br>
+        <code>https://engineeroflife.github.io/personal-civics-app/data/civics_128_2025.json</code><br><br>
+        Error: <code>${escapeHtml(err.message)}</code>
+      `;
+      qText.textContent = "Questions not loaded yet.";
+      progressText.textContent = "";
+      sourceText.textContent = "";
+    }
+  }
+
+  // ---------- Flashcards Events ----------
+  flipBtn.addEventListener('click', () => {
+    showAnswer = !showAnswer;
+    renderCard();
   });
 
-function show(){
-  const q=data[i];
-  document.getElementById('question').innerHTML="<b>"+q.question+"</b>";
-  document.getElementById('answers').innerHTML=
-    q.answers.map(a=>"• "+a).join("<br>");
-  document.getElementById('answers').style.display="none";
-  document.getElementById('count').innerText=(i+1)+" / "+data.length;
-}
+  prevBtn.addEventListener('click', () => {
+    if (idx > 0) { idx--; showAnswer = false; renderCard(); }
+  });
 
-function toggleAnswers(){
-  const a=document.getElementById('answers');
-  a.style.display=a.style.display==="none"?"block":"none";
-}
+  nextBtn.addEventListener('click', () => {
+    if (idx < items.length - 1) { idx++; showAnswer = false; renderCard(); }
+  });
 
-function speakQuestion(){
-  speechSynthesis.speak(new SpeechSynthesisUtterance(data[i].question));
-}
+  speakQBtn.addEventListener('click', () => {
+    if (!items.length) return;
+    speak("Question. " + items[idx].question);
+  });
 
-function speakAnswer(){
-  speechSynthesis.speak(new SpeechSynthesisUtterance(data[i].answers.join(". ")));
-}
+  speakABtn.addEventListener('click', () => {
+    if (!items.length) return;
+    speak("Answer. " + items[idx].answers.join(". "));
+  });
 
-function next(){ if(i<data.length-1){i++;show();} }
-function prev(){ if(i>0){i--;show();} }
+  // ---------- Interview ----------
+  function resetInterviewUI() {
+    askedEl.textContent = asked;
+    correctEl.textContent = correct;
+    wrongEl.textContent = wrong;
+  }
+
+  function interviewStart(queue) {
+    interviewQueue = queue.slice(0, 20);
+    interviewIndex = 0;
+    asked = 0; correct = 0; wrong = 0;
+    missed = [];
+    resultBox.classList.add('hidden');
+    reviewMissedBtn.classList.add('hidden');
+    iAnswersWrap.open = false;
+    showInterviewQuestion();
+    resetInterviewUI();
+  }
+
+  function showInterviewQuestion() {
+    const it = interviewQueue[interviewIndex];
+    if (!it) {
+      finishInterview();
+      return;
+    }
+    iNum.textContent = "#" + it.id;
+    iQuestion.textContent = it.question;
+    iAnswers.innerHTML = it.answers.map(a => `<div class="aLine"><span class="bullet"></span><div>${escapeHtml(a)}</div></div>`).join("");
+    iAnswersWrap.open = false;
+  }
+
+  function finishInterview() {
+    const passed = correct >= 12;
+    resultBox.classList.remove('hidden');
+    resultBox.innerHTML = `
+      <b style="font-size:1.2rem;">${passed ? "PASS ✅" : "NOT YET ❗️"}</b><br>
+      <div style="margin-top:6px;">Score: <b>${correct}</b>/20 (need 12 correct)</div>
+      <div class="muted small" style="margin-top:6px;">Manual scoring • Review missed to improve</div>
+    `;
+    if (missed.length) {
+      reviewMissedBtn.classList.remove('hidden');
+      reviewMissedBtn.textContent = `Review Missed (${missed.length})`;
+    }
+  }
+
+  startInterviewBtn.addEventListener('click', () => {
+    if (!items.length) return alert("Load questions first (Flashcards view).");
+    // Use filtered set so ⭐ Only affects interview too
+    const pool = items.slice().sort(() => Math.random() - 0.5);
+    interviewStart(pool);
+  });
+
+  resetInterviewBtn.addEventListener('click', () => {
+    interviewQueue = [];
+    interviewIndex = 0;
+    asked = 0; correct = 0; wrong = 0; missed = [];
+    iNum.textContent = "#—";
+    iQuestion.textContent = "Press Start to begin.";
+    iAnswers.innerHTML = "";
+    iAnswersWrap.open = false;
+    resultBox.classList.add('hidden');
+    reviewMissedBtn.classList.add('hidden');
+    resetInterviewUI();
+  });
+
+  reviewMissedBtn.addEventListener('click', () => {
+    if (!missed.length) return;
+    const pool = missed.slice().sort(() => Math.random() - 0.5);
+    interviewStart(pool);
+  });
+
+  iSpeakBtn.addEventListener('click', () => {
+    const it = interviewQueue[interviewIndex];
+    if (!it) return;
+    speak("Question. " + it.question);
+  });
+
+  markCorrectBtn.addEventListener('click', () => {
+    const it = interviewQueue[interviewIndex];
+    if (!it) return;
+    correct++; asked++;
+    interviewIndex++;
+    resetInterviewUI();
+    showInterviewQuestion();
+  });
+
+  markWrongBtn.addEventListener('click', () => {
+    const it = interviewQueue[interviewIndex];
+    if (!it) return;
+    wrong++; asked++;
+    if (!missed.find(x => x.id === it.id)) missed.push(it);
+    interviewIndex++;
+    resetInterviewUI();
+    showInterviewQuestion();
+  });
+
+  // ---------- Mode switching ----------
+  function setMode(m) {
+    const isInterview = (m === "interview");
+    cardsView.classList.toggle('hidden', isInterview);
+    interviewView.classList.toggle('hidden', !isInterview);
+  }
+
+  modeEl.addEventListener('change', () => setMode(modeEl.value));
+  starOnlyEl.addEventListener('change', () => applyFilter());
+  reloadBtn.addEventListener('click', () => loadQuestions());
+
+  // Start
+  setMode("cards");
+  loadQuestions();
 </script>
 </body>
 </html>
