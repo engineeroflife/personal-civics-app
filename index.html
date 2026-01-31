@@ -675,20 +675,17 @@ function vibrateWrong() {
     setTimeout(showInterviewQuestion, ms);
   });
 
-  markWrongBtn.addEventListener('click', () => {
-    const it = interviewQueue[interviewIndex];
-    if (!it) return;
+ markWrongBtn.addEventListener('click', () => {
+  const it = interviewQueue[interviewIndex];
+  if (!it) return;
 
-    const ms = flashCard(interviewCard, 'flash-wrong');
-    lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
+  vibrateWrong();        // 📳 THIS LINE (wrong only)
+  flashScreen(false);    // 🔴 screen flash
+  const ms = flashCard(interviewCard, 'flash-wrong');
 
-    wrong++; asked++;
-    if (!missed.find(x => x.id === it.id)) missed.push(it);
-    interviewIndex++;
-    resetInterviewUI();
-
-    setTimeout(showInterviewQuestion, ms);
-  });
+  wrong++; asked++;
+  ...
+});
 
   // ---------- Mode switching ----------
   function setMode(m) {
