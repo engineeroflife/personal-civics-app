@@ -87,5 +87,60 @@
 
     { "id": 78, "question": "Name one war fought by the United States in the 1900s.", "answers": ["World War I", "World War II", "Korean War", "Vietnam War", "Persian Gulf War"], "starred": false },
     { "id": 79, "question": "Who was President during World War I?", "answers": ["Woodrow Wilson"], "starred": false },
-    { "id": 80, "question": "Who was President during the Great Depression and World War II?", "answers": ["Franklin Roosevelt"], "starred": false }
+    { "id": 80, "question": "Who was President during the Great Depression and World War II?", "answers": ["Franklin Roosevelt"], "starred": false },
+    { "id": 81, "question": "Name one war fought by the United States in the 2000s.", "answers": ["War in Afghanistan", "Iraq War"], "starred": false },
+    { "id": 82, "question": "Who was President during the War in Afghanistan?", "answers": ["George W. Bush"], "starred": false },
+    { "id": 83, "question": "Who was President during the Iraq War?", "answers": ["George W. Bush"], "starred": false },
+    { "id": 84, "question": "What major event happened on September 11, 2001, in the United States?", "answers": ["Terrorists attacked the United States"], "starred": true },
+    { "id": 85, "question": "Name one American Indian tribe in the United States.", "answers": ["Cherokee", "Navajo", "Sioux", "Chippewa", "Choctaw", "Pueblo", "Apache", "Iroquois", "Creek", "Blackfeet", "Seminole"], "starred": false },
+    { "id": 86, "question": "Name one of the two longest rivers in the United States.", "answers": ["Missouri River", "Mississippi River"], "starred": false },
+    { "id": 87, "question": "What ocean is on the West Coast of the United States?", "answers": ["Pacific Ocean"], "starred": false },
+    { "id": 88, "question": "What ocean is on the East Coast of the United States?", "answers": ["Atlantic Ocean"], "starred": false },
+    { "id": 89, "question": "Name one U.S. territory.", "answers": ["Puerto Rico", "U.S. Virgin Islands", "American Samoa", "Northern Mariana Islands", "Guam"], "starred": false },
+    { "id": 90, "question": "Name one state that borders Canada.", "answers": ["Maine", "New Hampshire", "Vermont", "New York", "Pennsylvania", "Ohio", "Michigan", "Minnesota", "North Dakota", "Montana", "Idaho", "Washington", "Alaska"], "starred": false },
+
+    { "id": 91, "question": "Name one state that borders Mexico.", "answers": ["California", "Arizona", "New Mexico", "Texas"], "starred": false },
+    { "id": 92, "question": "What is the capital of the United States?", "answers": ["Washington, D.C."], "starred": true },
+    { "id": 93, "question": "Where is the Statue of Liberty?", "answers": ["New York Harbor", "Liberty Island"], "starred": false },
+    { "id": 94, "question": "Why does the flag have 13 stripes?", "answers": ["Because there were 13 original colonies"], "starred": false },
+    { "id": 95, "question": "Why does the flag have 50 stars?", "answers": ["Because there is one star for each state"], "starred": false },
+    { "id": 96, "question": "What is the name of the national anthem?", "answers": ["The Star-Spangled Banner"], "starred": false },
+    { "id": 97, "question": "When do we celebrate Independence Day?", "answers": ["July 4"], "starred": false },
+    { "id": 98, "question": "Name two national U.S. holidays.", "answers": ["New Year’s Day", "Martin Luther King Jr. Day", "Presidents’ Day", "Memorial Day", "Independence Day", "Labor Day", "Columbus Day", "Veterans Day", "Thanksgiving", "Christmas"], "starred": false },
+    { "id": 99, "question": "Where is the White House?", "answers": ["Washington, D.C."], "starred": false },
+    { "id": 100, "question": "Who lives in the White House?", "answers": ["The President"], "starred": false },
+
+    { "id": 101, "question": "Why does the Constitution begin with 'We the People'?", "answers": ["Because the government gets its power from the people"], "starred": true },
+    { "id": 102, "question": "What is one responsibility of all Americans?", "answers": ["Pay taxes", "Follow the law"], "starred": false },
+    { "id": 103, "question": "What are two rights of everyone living in the United States?", "answers": ["Freedom of expression", "Freedom of speech", "Freedom of religion", "Freedom of assembly"], "starred": false },
+    { "id": 104, "question": "What does the judicial branch interpret?", "answers": ["Laws"], "starred": false },
+    { "id": 105, "question": "Who appoints Supreme Court justices?", "answers": ["The President"], "starred": false },
+    { "id": 106, "question": "Who confirms Supreme Court justices?", "answers": ["The Senate"], "starred": false },
+    { "id": 107, "question": "What is the highest court in the land?", "answers": ["The Supreme Court"], "starred": false },
+    { "id": 108, "question": "What is the main purpose of the Declaration of Independence?", "answers": ["To declare independence from Great Britain"], "starred": false },
+    { "id": 109, "question": "What is one goal of the Constitution?", "answers": ["To establish justice", "To insure domestic tranquility", "To provide for the common defense", "To promote the general welfare", "To secure the blessings of liberty"], "starred": false },
+    { "id": 110, "question": "What does the Bill of Rights protect?", "answers": ["Basic rights of Americans"], "starred": false },
+
+    { "id": 111, "question": "What are the three branches of government?", "answers": ["Legislative", "Executive", "Judicial"], "starred": true },
+    { "id": 112, "question": "Who represents the people in Congress?", "answers": ["The House of Representatives"], "starred": false },
+    { "id": 113, "question": "Who represents all people of a state in Congress?", "answers": ["U.S. Senators"], "starred": false },
+    { "id": 114, "question": "What does the President promise to do in the oath of office?", "answers": ["Defend the Constitution"], "starred": false },
+    { "id": 115, "question": "What is one power of Congress?", "answers": ["Make laws", "Declare war"], "starred": false },
+    { "id": 116, "question": "What is one power of the President?", "answers": ["Sign bills", "Veto bills"], "starred": false },
+    { "id": 117, "question": "What is one power of the Supreme Court?", "answers": ["Review laws"], "starred": false },
+    { "id": 118, "question": "What is the rule of law?", "answers": ["No one is above the law"], "starred": true },
+    { "id": 119, "question": "What is one right guaranteed by the First Amendment?", "answers": ["Freedom of speech", "Freedom of religion", "Freedom of the press"], "starred": true },
+    { "id": 120, "question": "What does the Constitution do?", "answers": ["Protects basic rights", "Sets up the government"], "starred": false },
+
+    { "id": 121, "question": "Why do Americans pay taxes?", "answers": ["To fund the government", "To pay for public services"], "starred": false },
+    { "id": 122, "question": "What is the name of the current Governor of Florida?", "answers": ["Ron DeSantis"], "starred": true },
+    { "id": 123, "question": "Who are the two U.S. Senators from Florida?", "answers": ["Rick Scott", "Ashley Moody"], "starred": true },
+    { "id": 124, "question": "What is the capital of Florida?", "answers": ["Tallahassee"], "starred": true },
+    { "id": 125, "question": "What is one responsibility that is only for U.S. citizens?", "answers": ["Vote in a federal election", "Serve on a jury"], "starred": false },
+    { "id": 126, "question": "What are two ways citizens can participate in democracy?", "answers": ["Vote", "Join a political party", "Run for office"], "starred": false },
+    { "id": 127, "question": "When do we vote for President?", "answers": ["November"], "starred": false },
+    { "id": 128, "question": "What is the name of the current President of the United States?", "answers": ["Answers vary"], "starred": true }
+  ]
+}
+
 
