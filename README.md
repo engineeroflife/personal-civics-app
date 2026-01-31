@@ -1,2 +1,2 @@
-# Civics-Flash-Cards
+# civics-study-app
 Flashcards to improve US civis
