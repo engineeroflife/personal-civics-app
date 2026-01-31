@@ -387,6 +387,11 @@ function flashScreen(isCorrect) {
     el.classList.remove('green', 'red');
   }, 2000);
 }
+function vibrateWrong() {
+  if (navigator.vibrate) {
+    navigator.vibrate(200); // 200ms buzz
+  }
+}
 
   // ---------- State ----------
   let payloadSource = "";
