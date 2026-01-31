@@ -225,6 +225,53 @@
       background: #e74c3c;
       animation: screenRed 2s ease-out;
     }
+    /* ===== iPhone portrait fit & safe areas ===== */
+html, body {
+  height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Safe-area padding so content doesn't hide behind notch / home indicator */
+header {
+  padding-top: calc(14px + env(safe-area-inset-top));
+}
+
+main {
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+
+/* Prevent controls from forcing horizontal scrolling */
+.controls {
+  width: 100%;
+}
+
+/* On small screens: stack header rows nicely */
+@media (max-width: 520px) {
+  .brandRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .controls {
+    justify-content: flex-start;
+  }
+
+  /* Buttons fill width nicely in portrait */
+  .btnRow button {
+    flex: 1 1 100%;
+  }
+
+  /* Slightly smaller question text so it fits */
+  .questionText {
+    font-size: 1.18rem;
+  }
+
+  /* Reduce card padding a bit */
+  .card {
+    padding: 14px;
+  }
+}
   </style>
 </head>
 
