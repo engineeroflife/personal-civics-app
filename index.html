@@ -215,6 +215,12 @@
         <span>⭐ Only</span>
       </label>
 
+      <!-- ✅ NEW: Shuffle toggle -->
+      <label class="toggle">
+        <input type="checkbox" id="shuffleMode" />
+        <span>🔄 Shuffle</span>
+      </label>
+
       <select id="ttsSpeed" title="Text-to-speech speed">
         <option value="normal">TTS Normal</option>
         <option value="slow">TTS Slow</option>
@@ -320,6 +326,10 @@
   // ---------- Elements ----------
   const modeEl = document.getElementById('mode');
   const starOnlyEl = document.getElementById('starOnly');
+
+  // ✅ NEW: Shuffle element
+  const shuffleModeEl = document.getElementById('shuffleMode');
+
   const ttsSpeedEl = document.getElementById('ttsSpeed');
   const reloadBtn = document.getElementById('reloadBtn');
 
@@ -358,8 +368,22 @@
   const resultBox = document.getElementById('result');
 
   // ---------- Helpers ----------
+  function shuffleArray(arr) {
+    // Fisher–Yates shuffle (in-place copy)
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   function applyFilter() {
-    items = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
+    const base = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
+
+    // ✅ NEW: shuffle when toggle is on
+    items = shuffleModeEl.checked ? shuffleArray(base) : base;
+
     if (!items.length) {
       qText.textContent = "No questions found for this filter.";
       aBox.classList.add('hidden');
@@ -422,7 +446,6 @@
     aBox.classList.add('hidden');
 
     try {
-      // IMPORTANT: filename must match your repo exactly
       const res = await fetch("data/civics_128_2025.json", { cache: "no-store" });
       if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
@@ -523,7 +546,7 @@
 
   startInterviewBtn.addEventListener('click', () => {
     if (!items.length) return alert("Load questions first (Flashcards view).");
-    // Use filtered set so ⭐ Only affects interview too
+    // Interview is always randomized
     const pool = items.slice().sort(() => Math.random() - 0.5);
     interviewStart(pool);
   });
@@ -581,6 +604,10 @@
 
   modeEl.addEventListener('change', () => setMode(modeEl.value));
   starOnlyEl.addEventListener('change', () => applyFilter());
+
+  // ✅ NEW: Shuffle toggle reshuffles immediately
+  shuffleModeEl.addEventListener('change', () => applyFilter());
+
   reloadBtn.addEventListener('click', () => loadQuestions());
 
   // Start
