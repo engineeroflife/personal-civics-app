@@ -184,524 +184,528 @@
     }
     .small{font-size:.92rem;}
 
-    /* ===== Flash animations (smooth fade back to the card's true background) ===== */
+    /* ===== Card flash animations ===== */
     @keyframes flashGreen {
       0%   { background-color: #2ecc71; }
       100% { background-color: #ffffff; }
     }
-
     @keyframes flashRed {
       0%   { background-color: #e74c3c; }
       100% { background-color: #ffffff; }
     }
-
     @keyframes flashFlip {
       0%   { background-color: rgba(12, 29, 63, 0.12); }
       100% { background-color: #ffffff; }
     }
-
     .flash-correct { animation: flashGreen 2s ease-out; }
     .flash-wrong   { animation: flashRed 2s ease-out; }
     .flash-flip    { animation: flashFlip 300ms ease-out; }
-/* ===== Full-screen tint overlay ===== */
-#screenFlash{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 9999;
-}
 
-/* Use animation so it fades nicely and always ends at 0 opacity */
-@keyframes screenGreen {
-  0%   { opacity: 0.22; }
-  100% { opacity: 0; }
-}
-@keyframes screenRed {
-  0%   { opacity: 0.22; }
-  100% { opacity: 0; }
-}
-
-#screenFlash.green {
-  background: #2ecc71;
-  animation: screenGreen 2s ease-out;
-}
-
-#screenFlash.red {
-  background: #e74c3c;
-  animation: screenRed 2s ease-out;
-}
+    /* ===== Full-screen tint overlay ===== */
+    #screenFlash{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 9999;
+    }
+    @keyframes screenGreen {
+      0%   { opacity: 0.22; }
+      100% { opacity: 0; }
+    }
+    @keyframes screenRed {
+      0%   { opacity: 0.22; }
+      100% { opacity: 0; }
+    }
+    #screenFlash.green {
+      background: #2ecc71;
+      animation: screenGreen 2s ease-out;
+    }
+    #screenFlash.red {
+      background: #e74c3c;
+      animation: screenRed 2s ease-out;
+    }
   </style>
 </head>
 
-<body> 
+<body>
   <div id="screenFlash" aria-hidden="true"></div>
-<header>
-  <div class="wrap brandRow">
-    <div class="brandLeft">
-      <div class="flag" aria-hidden="true">
-        <span class="bar navy"></span>
-        <span class="bar red"></span>
-      </div>
-      <div class="titles">
-        <div class="title">Civics Practice</div>
-        <div class="sub">Flashcards • Interview Mode • Text-to-Speech</div>
-      </div>
-    </div>
 
-    <div class="controls">
-      <select id="mode">
-        <option value="cards">Flashcards</option>
-        <option value="interview">Interview Mode</option>
-      </select>
-
-      <label class="toggle">
-        <input type="checkbox" id="starOnly" />
-        <span>⭐ Only</span>
-      </label>
-
-      <label class="toggle">
-        <input type="checkbox" id="shuffleMode" />
-        <span>🔄 Shuffle</span>
-      </label>
-
-      <select id="ttsSpeed" title="Text-to-speech speed">
-        <option value="normal">TTS Normal</option>
-        <option value="slow">TTS Slow</option>
-      </select>
-
-      <select id="ttsVoice" title="Voice">
-        <option value="">Voice (Auto)</option>
-      </select>
-
-      <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <!-- Flashcards View -->
-  <section id="cardsView" class="view">
-    <div class="card" id="questionCard">
-      <div class="cardTop">
-        <div class="meta">
-          <span id="cardLabel" class="pill">QUESTION</span>
-          <span class="dot">•</span>
-          <span id="cardNum" class="muted">#—</span>
-          <span id="cardStar" class="pill star hidden">⭐</span>
+  <header>
+    <div class="wrap brandRow">
+      <div class="brandLeft">
+        <div class="flag" aria-hidden="true">
+          <span class="bar navy"></span>
+          <span class="bar red"></span>
         </div>
-        <button class="ghost" id="flipBtn">Show Answer</button>
-      </div>
-
-      <p id="qText" class="questionText">Loading questions…</p>
-
-      <div id="aBox" class="answers hidden"></div>
-
-      <div class="btnRow">
-        <button id="prevBtn">◀ Prev</button>
-        <button id="speakQBtn">🔊 Speak Q</button>
-        <button id="speakABtn">🔊 Speak A</button>
-        <button id="nextBtn">Next ▶</button>
-      </div>
-
-      <div class="footerRow">
-        <div class="muted small" id="progressText"></div>
-        <div class="muted small" id="sourceText"></div>
-      </div>
-
-      <div id="loadNotice" class="notice hidden"></div>
-    </div>
-  </section>
-
-  <!-- Interview View -->
-  <section id="interviewView" class="view hidden">
-    <div class="panel">
-      <div class="panelRow">
-        <div class="kpis">
-          <div class="kpi">Asked: <b id="asked">0</b>/20</div>
-          <div class="kpi">Correct: <b id="correct">0</b></div>
-          <div class="kpi">Wrong: <b id="wrong">0</b></div>
-        </div>
-        <div class="kpis">
-          <button id="startInterviewBtn" class="primary">Start</button>
-          <button id="reviewMissedBtn" class="ghost hidden">Review Missed</button>
-          <button id="resetInterviewBtn" class="ghost">Reset</button>
+        <div class="titles">
+          <div class="title">Civics Practice</div>
+          <div class="sub">Flashcards • Interview Mode • Text-to-Speech</div>
         </div>
       </div>
-    </div>
 
-    <div class="card" id="interviewCard">
-      <div class="cardTop">
-        <div class="meta">
-          <span class="pill">QUESTION</span>
-          <span class="dot">•</span>
-          <span id="iNum" class="muted">#—</span>
+      <div class="controls">
+        <select id="mode">
+          <option value="cards">Flashcards</option>
+          <option value="interview">Interview Mode</option>
+        </select>
+
+        <label class="toggle">
+          <input type="checkbox" id="starOnly" />
+          <span>⭐ Only</span>
+        </label>
+
+        <label class="toggle">
+          <input type="checkbox" id="shuffleMode" />
+          <span>🔄 Shuffle</span>
+        </label>
+
+        <select id="ttsSpeed" title="Text-to-speech speed">
+          <option value="normal">TTS Normal</option>
+          <option value="slow">TTS Slow</option>
+        </select>
+
+        <select id="ttsVoice" title="Voice">
+          <option value="">Voice (Auto)</option>
+        </select>
+
+        <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Flashcards View -->
+    <section id="cardsView" class="view">
+      <div class="card" id="questionCard">
+        <div class="cardTop">
+          <div class="meta">
+            <span id="cardLabel" class="pill">QUESTION</span>
+            <span class="dot">•</span>
+            <span id="cardNum" class="muted">#—</span>
+            <span id="cardStar" class="pill star hidden">⭐</span>
+          </div>
+          <button class="ghost" id="flipBtn">Show Answer</button>
         </div>
-        <button class="ghost" id="iSpeakBtn">🔊 Speak</button>
+
+        <p id="qText" class="questionText">Loading questions…</p>
+
+        <div id="aBox" class="answers hidden"></div>
+
+        <div class="btnRow">
+          <button id="prevBtn">◀ Prev</button>
+          <button id="speakQBtn">🔊 Speak Q</button>
+          <button id="speakABtn">🔊 Speak A</button>
+          <button id="nextBtn">Next ▶</button>
+        </div>
+
+        <div class="footerRow">
+          <div class="muted small" id="progressText"></div>
+          <div class="muted small" id="sourceText"></div>
+        </div>
+
+        <div id="loadNotice" class="notice hidden"></div>
+      </div>
+    </section>
+
+    <!-- Interview View -->
+    <section id="interviewView" class="view hidden">
+      <div class="panel">
+        <div class="panelRow">
+          <div class="kpis">
+            <div class="kpi">Asked: <b id="asked">0</b>/20</div>
+            <div class="kpi">Correct: <b id="correct">0</b></div>
+            <div class="kpi">Wrong: <b id="wrong">0</b></div>
+          </div>
+          <div class="kpis">
+            <button id="startInterviewBtn" class="primary">Start</button>
+            <button id="reviewMissedBtn" class="ghost hidden">Review Missed</button>
+            <button id="resetInterviewBtn" class="ghost">Reset</button>
+          </div>
+        </div>
       </div>
 
-      <p id="iQuestion" class="questionText">Press Start to begin.</p>
+      <div class="card" id="interviewCard">
+        <div class="cardTop">
+          <div class="meta">
+            <span class="pill">QUESTION</span>
+            <span class="dot">•</span>
+            <span id="iNum" class="muted">#—</span>
+          </div>
+          <button class="ghost" id="iSpeakBtn">🔊 Speak</button>
+        </div>
 
-      <details class="answers" id="iAnswersWrap">
-        <summary>Show acceptable answers</summary>
-        <div id="iAnswers" style="margin-top:10px;"></div>
-      </details>
+        <p id="iQuestion" class="questionText">Press Start to begin.</p>
 
-      <div class="btnRow">
-        <button id="markWrongBtn">Incorrect</button>
-        <button id="markCorrectBtn" class="primary">Correct</button>
+        <details class="answers" id="iAnswersWrap">
+          <summary>Show acceptable answers</summary>
+          <div id="iAnswers" style="margin-top:10px;"></div>
+        </details>
+
+        <div class="btnRow">
+          <button id="markWrongBtn">Incorrect</button>
+          <button id="markCorrectBtn" class="primary">Correct</button>
+        </div>
+
+        <div id="result" class="result hidden"></div>
       </div>
+    </section>
+  </main>
 
-      <div id="result" class="result hidden"></div>
-    </div>
-  </section>
-</main>
-
-<script>
-  // ===== Flash helper + button lock (prevents double-click skipping) =====
-  function lockButtons(btns, ms) {
-    btns.forEach(b => { if (b) b.disabled = true; });
-    setTimeout(() => btns.forEach(b => { if (b) b.disabled = false; }), ms);
-  }
-
-  function flashCard(cardEl, type) {
-    if (!cardEl) return;
-
-    cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
-    void cardEl.offsetWidth; // restart animation reliably
-    cardEl.classList.add(type);
-
-    const ms = (type === 'flash-flip') ? 350 : 2000;
-    setTimeout(() => cardEl.classList.remove(type), ms);
-    return ms;
-  }
-function flashScreen(isCorrect) {
-  const el = document.getElementById('screenFlash');
-  if (!el) return;
-
-  el.classList.remove('green', 'red');
-  void el.offsetWidth; // restart animation reliably
-  el.classList.add(isCorrect ? 'green' : 'red');
-
-  setTimeout(() => {
-    el.classList.remove('green', 'red');
-  }, 2000);
-}
-function vibrateWrong() {
-  if (navigator.vibrate) {
-    navigator.vibrate(200); // 200ms buzz
-  }
-}
-
-  // ---------- State ----------
-  let payloadSource = "";
-  let allItems = [];
-  let items = [];
-  let idx = 0;
-  let showAnswer = false;
-
-  // Interview state
-  let interviewQueue = [];
-  let interviewIndex = 0;
-  let asked = 0, correct = 0, wrong = 0;
-  let missed = [];
-
-  // ---------- Elements ----------
-  const modeEl = document.getElementById('mode');
-  const starOnlyEl = document.getElementById('starOnly');
-  const shuffleModeEl = document.getElementById('shuffleMode');
-  const ttsSpeedEl = document.getElementById('ttsSpeed');
-  const reloadBtn = document.getElementById('reloadBtn');
-
-  const cardsView = document.getElementById('cardsView');
-  const interviewView = document.getElementById('interviewView');
-
-  const questionCard = document.getElementById('questionCard');
-  const interviewCard = document.getElementById('interviewCard');
-
-  const cardLabel = document.getElementById('cardLabel');
-  const cardNum = document.getElementById('cardNum');
-  const cardStar = document.getElementById('cardStar');
-  const qText = document.getElementById('qText');
-  const aBox = document.getElementById('aBox');
-  const flipBtn = document.getElementById('flipBtn');
-
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const speakQBtn = document.getElementById('speakQBtn');
-  const speakABtn = document.getElementById('speakABtn');
-  const progressText = document.getElementById('progressText');
-  const sourceText = document.getElementById('sourceText');
-  const loadNotice = document.getElementById('loadNotice');
-
-  const askedEl = document.getElementById('asked');
-  const correctEl = document.getElementById('correct');
-  const wrongEl = document.getElementById('wrong');
-
-  const startInterviewBtn = document.getElementById('startInterviewBtn');
-  const reviewMissedBtn = document.getElementById('reviewMissedBtn');
-  const resetInterviewBtn = document.getElementById('resetInterviewBtn');
-  const iNum = document.getElementById('iNum');
-  const iQuestion = document.getElementById('iQuestion');
-  const iSpeakBtn = document.getElementById('iSpeakBtn');
-  const iAnswersWrap = document.getElementById('iAnswersWrap');
-  const iAnswers = document.getElementById('iAnswers');
-  const markWrongBtn = document.getElementById('markWrongBtn');
-  const markCorrectBtn = document.getElementById('markCorrectBtn');
-  const resultBox = document.getElementById('result');
-
-  // ---------- Helpers ----------
-  function shuffleArray(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
+  <script>
+    // ===== Helpers: flash + lock + screen tint + vibration =====
+    function lockButtons(btns, ms) {
+      btns.forEach(b => { if (b) b.disabled = true; });
+      setTimeout(() => btns.forEach(b => { if (b) b.disabled = false; }), ms);
     }
-    return a;
-  }
 
-  function applyFilter() {
-    const base = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
-    items = shuffleModeEl.checked ? shuffleArray(base) : base;
+    function flashCard(cardEl, type) {
+      if (!cardEl) return 0;
 
-    if (!items.length) {
-      qText.textContent = "No questions found for this filter.";
-      aBox.classList.add('hidden');
-      progressText.textContent = "";
-      return;
+      cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
+      void cardEl.offsetWidth; // restart animation reliably
+      cardEl.classList.add(type);
+
+      const ms = (type === 'flash-flip') ? 350 : 2000;
+      setTimeout(() => cardEl.classList.remove(type), ms);
+      return ms;
     }
-    idx = 0;
-    showAnswer = false;
-    renderCard();
-  }
 
-  function renderCard() {
-    if (!items.length) return;
-    const it = items[idx];
-    cardNum.textContent = "#" + it.id;
-    cardStar.classList.toggle('hidden', !it.starred);
-    qText.textContent = it.question;
+    function flashScreen(isCorrect) {
+      const el = document.getElementById('screenFlash');
+      if (!el) return;
 
-    aBox.innerHTML = it.answers.map(a => `
-      <div class="aLine">
-        <span class="bullet"></span>
-        <div>${escapeHtml(a)}</div>
-      </div>`).join("");
+      el.classList.remove('green', 'red');
+      void el.offsetWidth;
+      el.classList.add(isCorrect ? 'green' : 'red');
 
-    aBox.classList.toggle('hidden', !showAnswer);
-    flipBtn.textContent = showAnswer ? "Hide Answer" : "Show Answer";
-    cardLabel.textContent = showAnswer ? "ANSWER" : "QUESTION";
+      setTimeout(() => el.classList.remove('green', 'red'), 2000);
+    }
 
-    progressText.textContent = `Card ${idx + 1} of ${items.length}`;
-    sourceText.textContent = payloadSource ? `Source: ${payloadSource}` : "";
-    prevBtn.disabled = (idx === 0);
-    nextBtn.disabled = (idx === items.length - 1);
-  }
+    function vibrateWrong() {
+      if (navigator.vibrate) navigator.vibrate(200);
+    }
 
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, m => ({
-      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-    }[m]));
-  }
+    // ---------- State ----------
+    let payloadSource = "";
+    let allItems = [];
+    let items = [];
+    let idx = 0;
+    let showAnswer = false;
 
-  function ttsRate() {
-    return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
-  }
+    // Interview state
+    let interviewQueue = [];
+    let interviewIndex = 0;
+    let asked = 0, correct = 0, wrong = 0;
+    let missed = [];
 
-  function speak(text) {
-    if (!text) return;
-    if (!window.speechSynthesis) return alert("Text-to-Speech is not available in this browser.");
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-US";
-    u.rate = ttsRate();
-    speechSynthesis.speak(u);
-  }
+    // ---------- Elements ----------
+    const modeEl = document.getElementById('mode');
+    const starOnlyEl = document.getElementById('starOnly');
+    const shuffleModeEl = document.getElementById('shuffleMode');
+    const ttsSpeedEl = document.getElementById('ttsSpeed');
+    const reloadBtn = document.getElementById('reloadBtn');
 
-  // ---------- Data Load ----------
-  async function loadQuestions() {
-    loadNotice.classList.add('hidden');
-    qText.textContent = "Loading questions…";
-    aBox.classList.add('hidden');
+    const cardsView = document.getElementById('cardsView');
+    const interviewView = document.getElementById('interviewView');
 
-    try {
-      const res = await fetch("data/civics_128_2025.json", { cache: "no-store" });
-      if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+    const questionCard = document.getElementById('questionCard');
+    const interviewCard = document.getElementById('interviewCard');
 
-      const json = await res.json();
-      if (!json.items || !Array.isArray(json.items)) {
-        throw new Error("JSON format error: expected { items: [...] }");
+    const cardLabel = document.getElementById('cardLabel');
+    const cardNum = document.getElementById('cardNum');
+    const cardStar = document.getElementById('cardStar');
+    const qText = document.getElementById('qText');
+    const aBox = document.getElementById('aBox');
+    const flipBtn = document.getElementById('flipBtn');
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const speakQBtn = document.getElementById('speakQBtn');
+    const speakABtn = document.getElementById('speakABtn');
+    const progressText = document.getElementById('progressText');
+    const sourceText = document.getElementById('sourceText');
+    const loadNotice = document.getElementById('loadNotice');
+
+    const askedEl = document.getElementById('asked');
+    const correctEl = document.getElementById('correct');
+    const wrongEl = document.getElementById('wrong');
+
+    const startInterviewBtn = document.getElementById('startInterviewBtn');
+    const reviewMissedBtn = document.getElementById('reviewMissedBtn');
+    const resetInterviewBtn = document.getElementById('resetInterviewBtn');
+    const iNum = document.getElementById('iNum');
+    const iQuestion = document.getElementById('iQuestion');
+    const iSpeakBtn = document.getElementById('iSpeakBtn');
+    const iAnswersWrap = document.getElementById('iAnswersWrap');
+    const iAnswers = document.getElementById('iAnswers');
+    const markWrongBtn = document.getElementById('markWrongBtn');
+    const markCorrectBtn = document.getElementById('markCorrectBtn');
+    const resultBox = document.getElementById('result');
+
+    // ---------- Helpers ----------
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
       }
+      return a;
+    }
 
-      payloadSource = json.source || "";
-      allItems = json.items;
-      applyFilter();
+    function applyFilter() {
+      const base = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
+      items = shuffleModeEl.checked ? shuffleArray(base) : base;
 
-    } catch (err) {
-      console.error(err);
-      loadNotice.classList.remove('hidden');
-      loadNotice.innerHTML = `
-        <b>Questions file not found or not readable.</b><br><br>
-        Make sure this file exists in your repo:<br>
-        <code>data/civics_128_2025.json</code><br><br>
-        Test it by opening:<br>
-        <code>https://engineeroflife.github.io/personal-civics-app/data/civics_128_2025.json</code><br><br>
-        Error: <code>${escapeHtml(err.message)}</code>
+      if (!items.length) {
+        qText.textContent = "No questions found for this filter.";
+        aBox.classList.add('hidden');
+        progressText.textContent = "";
+        return;
+      }
+      idx = 0;
+      showAnswer = false;
+      renderCard();
+    }
+
+    function renderCard() {
+      if (!items.length) return;
+      const it = items[idx];
+      cardNum.textContent = "#" + it.id;
+      cardStar.classList.toggle('hidden', !it.starred);
+      qText.textContent = it.question;
+
+      aBox.innerHTML = it.answers.map(a => `
+        <div class="aLine">
+          <span class="bullet"></span>
+          <div>${escapeHtml(a)}</div>
+        </div>`).join("");
+
+      aBox.classList.toggle('hidden', !showAnswer);
+      flipBtn.textContent = showAnswer ? "Hide Answer" : "Show Answer";
+      cardLabel.textContent = showAnswer ? "ANSWER" : "QUESTION";
+
+      progressText.textContent = `Card ${idx + 1} of ${items.length}`;
+      sourceText.textContent = payloadSource ? `Source: ${payloadSource}` : "";
+      prevBtn.disabled = (idx === 0);
+      nextBtn.disabled = (idx === items.length - 1);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+      }[m]));
+    }
+
+    function ttsRate() {
+      return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
+    }
+
+    function speak(text) {
+      if (!text) return;
+      if (!window.speechSynthesis) return alert("Text-to-Speech is not available in this browser.");
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      u.rate = ttsRate();
+      speechSynthesis.speak(u);
+    }
+
+    // ---------- Data Load (with timeout so you don't get stuck on Loading...) ----------
+    async function loadQuestions() {
+      loadNotice.classList.add('hidden');
+      qText.textContent = "Loading questions…";
+      aBox.classList.add('hidden');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const res = await fetch("data/civics_128_2025.json", {
+          cache: "no-store",
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+
+        const json = await res.json();
+        if (!json.items || !Array.isArray(json.items)) {
+          throw new Error("JSON format error: expected { items: [...] }");
+        }
+
+        payloadSource = json.source || "";
+        allItems = json.items;
+        applyFilter();
+
+      } catch (err) {
+        clearTimeout(timeoutId);
+        console.error(err);
+
+        loadNotice.classList.remove('hidden');
+        loadNotice.innerHTML = `
+          <b>Questions file not found, blocked, or too slow.</b><br><br>
+          Expected path:<br>
+          <code>data/civics_128_2025.json</code><br><br>
+          Error:<br>
+          <code>${escapeHtml(err.name + ": " + err.message)}</code>
+        `;
+        qText.textContent = "Questions not loaded.";
+        progressText.textContent = "";
+        sourceText.textContent = "";
+      }
+    }
+
+    // ---------- Flashcards Events ----------
+    flipBtn.addEventListener('click', () => {
+      flashCard(questionCard, 'flash-flip');
+      showAnswer = !showAnswer;
+      renderCard();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (idx > 0) { idx--; showAnswer = false; renderCard(); }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (idx < items.length - 1) { idx++; showAnswer = false; renderCard(); }
+    });
+
+    speakQBtn.addEventListener('click', () => {
+      if (!items.length) return;
+      speak("Question. " + items[idx].question);
+    });
+
+    speakABtn.addEventListener('click', () => {
+      if (!items.length) return;
+      speak("Answer. " + items[idx].answers.join(". "));
+    });
+
+    // ---------- Interview ----------
+    function resetInterviewUI() {
+      askedEl.textContent = asked;
+      correctEl.textContent = correct;
+      wrongEl.textContent = wrong;
+    }
+
+    function interviewStart(queue) {
+      interviewQueue = queue.slice(0, 20);
+      interviewIndex = 0;
+      asked = 0; correct = 0; wrong = 0;
+      missed = [];
+      resultBox.classList.add('hidden');
+      reviewMissedBtn.classList.add('hidden');
+      iAnswersWrap.open = false;
+      showInterviewQuestion();
+      resetInterviewUI();
+    }
+
+    function showInterviewQuestion() {
+      const it = interviewQueue[interviewIndex];
+      if (!it) {
+        finishInterview();
+        return;
+      }
+      iNum.textContent = "#" + it.id;
+      iQuestion.textContent = it.question;
+      iAnswers.innerHTML = it.answers.map(a =>
+        `<div class="aLine"><span class="bullet"></span><div>${escapeHtml(a)}</div></div>`
+      ).join("");
+      iAnswersWrap.open = false;
+    }
+
+    function finishInterview() {
+      const passed = correct >= 12;
+      resultBox.classList.remove('hidden');
+      resultBox.innerHTML = `
+        <b style="font-size:1.2rem;">${passed ? "PASS ✅" : "NOT YET ❗️"}</b><br>
+        <div style="margin-top:6px;">Score: <b>${correct}</b>/20 (need 12 correct)</div>
+        <div class="muted small" style="margin-top:6px;">Manual scoring • Review missed to improve</div>
       `;
-      qText.textContent = "Questions not loaded yet.";
-      progressText.textContent = "";
-      sourceText.textContent = "";
+      if (missed.length) {
+        reviewMissedBtn.classList.remove('hidden');
+        reviewMissedBtn.textContent = `Review Missed (${missed.length})`;
+      }
     }
-  }
 
-  // ---------- Flashcards Events ----------
-  flipBtn.addEventListener('click', () => {
-    // subtle flash only on flip
-    flashCard(questionCard, 'flash-flip');
+    startInterviewBtn.addEventListener('click', () => {
+      if (!items.length) return alert("Load questions first (Flashcards view).");
+      const pool = items.slice().sort(() => Math.random() - 0.5);
+      interviewStart(pool);
+    });
 
-    showAnswer = !showAnswer;
-    renderCard();
-  });
+    resetInterviewBtn.addEventListener('click', () => {
+      interviewQueue = [];
+      interviewIndex = 0;
+      asked = 0; correct = 0; wrong = 0; missed = [];
+      iNum.textContent = "#—";
+      iQuestion.textContent = "Press Start to begin.";
+      iAnswers.innerHTML = "";
+      iAnswersWrap.open = false;
+      resultBox.classList.add('hidden');
+      reviewMissedBtn.classList.add('hidden');
+      resetInterviewUI();
+    });
 
-  prevBtn.addEventListener('click', () => {
-    if (idx > 0) { idx--; showAnswer = false; renderCard(); }
-  });
+    reviewMissedBtn.addEventListener('click', () => {
+      if (!missed.length) return;
+      const pool = missed.slice().sort(() => Math.random() - 0.5);
+      interviewStart(pool);
+    });
 
-  nextBtn.addEventListener('click', () => {
-    if (idx < items.length - 1) { idx++; showAnswer = false; renderCard(); }
-  });
+    iSpeakBtn.addEventListener('click', () => {
+      const it = interviewQueue[interviewIndex];
+      if (!it) return;
+      speak("Question. " + it.question);
+    });
 
-  speakQBtn.addEventListener('click', () => {
-    if (!items.length) return;
-    speak("Question. " + items[idx].question);
-  });
+    // ✅ Correct: green + screen tint, lock, then next question
+    markCorrectBtn.addEventListener('click', () => {
+      const it = interviewQueue[interviewIndex];
+      if (!it) return;
 
-  speakABtn.addEventListener('click', () => {
-    if (!items.length) return;
-    speak("Answer. " + items[idx].answers.join(". "));
-  });
+      flashScreen(true);
+      const ms = flashCard(interviewCard, 'flash-correct');
+      lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
 
-  // ---------- Interview ----------
-  function resetInterviewUI() {
-    askedEl.textContent = asked;
-    correctEl.textContent = correct;
-    wrongEl.textContent = wrong;
-  }
+      correct++; asked++;
+      interviewIndex++;
+      resetInterviewUI();
+      setTimeout(showInterviewQuestion, ms);
+    });
 
-  function interviewStart(queue) {
-    interviewQueue = queue.slice(0, 20);
-    interviewIndex = 0;
-    asked = 0; correct = 0; wrong = 0;
-    missed = [];
-    resultBox.classList.add('hidden');
-    reviewMissedBtn.classList.add('hidden');
-    iAnswersWrap.open = false;
-    showInterviewQuestion();
-    resetInterviewUI();
-  }
+    // ✅ Wrong: vibrate + red screen tint, lock, then next question
+    markWrongBtn.addEventListener('click', () => {
+      const it = interviewQueue[interviewIndex];
+      if (!it) return;
 
-  function showInterviewQuestion() {
-    const it = interviewQueue[interviewIndex];
-    if (!it) {
-      finishInterview();
-      return;
+      vibrateWrong();
+      flashScreen(false);
+      const ms = flashCard(interviewCard, 'flash-wrong');
+      lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
+
+      wrong++; asked++;
+      if (!missed.find(x => x.id === it.id)) missed.push(it);
+      interviewIndex++;
+      resetInterviewUI();
+      setTimeout(showInterviewQuestion, ms);
+    });
+
+    // ---------- Mode switching ----------
+    function setMode(m) {
+      const isInterview = (m === "interview");
+      cardsView.classList.toggle('hidden', isInterview);
+      interviewView.classList.toggle('hidden', !isInterview);
     }
-    iNum.textContent = "#" + it.id;
-    iQuestion.textContent = it.question;
-    iAnswers.innerHTML = it.answers.map(a =>
-      `<div class="aLine"><span class="bullet"></span><div>${escapeHtml(a)}</div></div>`
-    ).join("");
-    iAnswersWrap.open = false;
-  }
 
-  function finishInterview() {
-    const passed = correct >= 12;
-    resultBox.classList.remove('hidden');
-    resultBox.innerHTML = `
-      <b style="font-size:1.2rem;">${passed ? "PASS ✅" : "NOT YET ❗️"}</b><br>
-      <div style="margin-top:6px;">Score: <b>${correct}</b>/20 (need 12 correct)</div>
-      <div class="muted small" style="margin-top:6px;">Manual scoring • Review missed to improve</div>
-    `;
-    if (missed.length) {
-      reviewMissedBtn.classList.remove('hidden');
-      reviewMissedBtn.textContent = \`Review Missed (\${missed.length})\`;
-    }
-  }
+    modeEl.addEventListener('change', () => setMode(modeEl.value));
+    starOnlyEl.addEventListener('change', () => applyFilter());
+    shuffleModeEl.addEventListener('change', () => applyFilter());
+    reloadBtn.addEventListener('click', () => loadQuestions());
 
-  startInterviewBtn.addEventListener('click', () => {
-    if (!items.length) return alert("Load questions first (Flashcards view).");
-    const pool = items.slice().sort(() => Math.random() - 0.5);
-    interviewStart(pool);
-  });
-
-  resetInterviewBtn.addEventListener('click', () => {
-    interviewQueue = [];
-    interviewIndex = 0;
-    asked = 0; correct = 0; wrong = 0; missed = [];
-    iNum.textContent = "#—";
-    iQuestion.textContent = "Press Start to begin.";
-    iAnswers.innerHTML = "";
-    iAnswersWrap.open = false;
-    resultBox.classList.add('hidden');
-    reviewMissedBtn.classList.add('hidden');
-    resetInterviewUI();
-  });
-
-  reviewMissedBtn.addEventListener('click', () => {
-    if (!missed.length) return;
-    const pool = missed.slice().sort(() => Math.random() - 0.5);
-    interviewStart(pool);
-  });
-
-  iSpeakBtn.addEventListener('click', () => {
-    const it = interviewQueue[interviewIndex];
-    if (!it) return;
-    speak("Question. " + it.question);
-  });
-
-  // ✅ Flash + lock during scoring so you don't skip questions accidentally
-  markCorrectBtn.addEventListener('click', () => {
-    const it = interviewQueue[interviewIndex];
-    if (!it) return;
-
-    const ms = flashCard(interviewCard, 'flash-correct');
-    lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
-
-    correct++; asked++;
-    interviewIndex++;
-    resetInterviewUI();
-
-    // show next question AFTER flash so user sees the feedback
-    setTimeout(showInterviewQuestion, ms);
-  });
-
- markWrongBtn.addEventListener('click', () => {
-  const it = interviewQueue[interviewIndex];
-  if (!it) return;
-
-  vibrateWrong();        // 📳 THIS LINE (wrong only)
-  flashScreen(false);    // 🔴 screen flash
-  const ms = flashCard(interviewCard, 'flash-wrong');
-
-  wrong++; asked++;
-  ...
-});
-
-  // ---------- Mode switching ----------
-  function setMode(m) {
-    const isInterview = (m === "interview");
-    cardsView.classList.toggle('hidden', isInterview);
-    interviewView.classList.toggle('hidden', !isInterview);
-  }
-
-  modeEl.addEventListener('change', () => setMode(modeEl.value));
-  starOnlyEl.addEventListener('change', () => applyFilter());
-  shuffleModeEl.addEventListener('change', () => applyFilter());
-  reloadBtn.addEventListener('click', () => loadQuestions());
-
-  // Start
-  setMode("cards");
-  loadQuestions();
-</script>
+    // Start
+    setMode("cards");
+    loadQuestions();
+  </script>
 </body>
 </html>
