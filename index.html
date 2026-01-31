@@ -20,6 +20,7 @@
       --max:920px;
       --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
     }
+  
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -187,6 +188,16 @@
       background:#fff;
     }
     .small{font-size:.92rem;}
+    /* === Answer feedback flash === */
+.card.flash-correct {
+  background-color: #2ecc71 !important; /* green */
+  transition: background-color 0.25s ease;
+}
+
+.card.flash-wrong {
+  background-color: #e74c3c !important; /* red */
+  transition: background-color 0.25s ease;
+}
   </style>
 </head>
 
