@@ -237,9 +237,9 @@
         <option value="slow">TTS Slow</option>
       </select>
 
-<select id="ttsVoice" title="Voice">
-  <option value="">Voice (Auto)</option>
-</select>
+      <select id="ttsVoice" title="Voice">
+        <option value="">Voice (Auto)</option>
+      </select>
 
       <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
     </div>
@@ -249,7 +249,7 @@
 <main>
   <!-- Flashcards View -->
   <section id="cardsView" class="view">
-<div class="card" id="questionCard">
+    <div class="card" id="questionCard">
 
       <div class="cardTop">
         <div class="meta">
@@ -298,7 +298,9 @@
       </div>
     </div>
 
- 
+    <!-- ✅ Missing wrapper added -->
+    <div class="card">
+
       <div class="cardTop">
         <div class="meta">
           <span class="pill">QUESTION</span>
@@ -324,6 +326,7 @@
     </div>
   </section>
 </main>
+</body>
 
 <script>
   // ---------- State ----------
