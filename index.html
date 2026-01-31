@@ -203,11 +203,39 @@
     .flash-correct { animation: flashGreen 2s ease-out; }
     .flash-wrong   { animation: flashRed 2s ease-out; }
     .flash-flip    { animation: flashFlip 300ms ease-out; }
+/* ===== Full-screen tint overlay ===== */
+#screenFlash{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 9999;
+}
 
+/* Use animation so it fades nicely and always ends at 0 opacity */
+@keyframes screenGreen {
+  0%   { opacity: 0.22; }
+  100% { opacity: 0; }
+}
+@keyframes screenRed {
+  0%   { opacity: 0.22; }
+  100% { opacity: 0; }
+}
+
+#screenFlash.green {
+  background: #2ecc71;
+  animation: screenGreen 2s ease-out;
+}
+
+#screenFlash.red {
+  background: #e74c3c;
+  animation: screenRed 2s ease-out;
+}
   </style>
 </head>
 
-<body>
+<body> 
+  <div id="screenFlash" aria-hidden="true"></div>
 <header>
   <div class="wrap brandRow">
     <div class="brandLeft">
