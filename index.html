@@ -198,6 +198,35 @@
   background-color: #e74c3c !important; /* red */
   transition: background-color 0.25s ease;
 }
+    /* ===== Flash animations (smooth fade back) ===== */
+@keyframes flashGreen {
+  0%   { background-color: #2ecc71; }
+  100% { background-color: var(--panel); }
+}
+
+@keyframes flashRed {
+  0%   { background-color: #e74c3c; }
+  100% { background-color: var(--panel); }
+}
+
+/* Subtle flip flash (neutral / highlight) */
+@keyframes flashFlip {
+  0%   { background-color: rgba(12, 29, 63, 0.12); } /* navy tint */
+  100% { background-color: var(--panel); }
+}
+
+.flash-correct {
+  animation: flashGreen 2s ease-out;
+}
+
+.flash-wrong {
+  animation: flashRed 2s ease-out;
+}
+
+.flash-flip {
+  animation: flashFlip 300ms ease-out;
+}
+
   </style>
 </head>
 
@@ -328,6 +357,22 @@
 </main>
 
 <script>
+  function flashCard(cardEl, type) {
+  if (!cardEl) return;
+
+  // Remove any existing flash class so re-trigger works instantly
+  cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
+
+  // Force reflow so animation restarts reliably
+  void cardEl.offsetWidth;
+
+  cardEl.classList.add(type);
+
+  // Clean up class after animation finishes
+  const ms = (type === 'flash-flip') ? 350 : 2000;
+  setTimeout(() => cardEl.classList.remove(type), ms);
+}
+
   // ---------- State ----------
   let payloadSource = "";
   let allItems = [];
