@@ -20,7 +20,7 @@
       --max:920px;
       --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial;
     }
-  
+
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -38,9 +38,7 @@
     .wrap{max-width:var(--max); margin:0 auto;}
     .brandRow{display:flex; align-items:center; justify-content:space-between; gap:12px;}
     .brandLeft{display:flex; align-items:center; gap:12px; min-width:260px;}
-    .flag{
-      display:flex; align-items:center; gap:10px;
-    }
+    .flag{display:flex; align-items:center; gap:10px;}
     .flag .bar{height:10px; border-radius:999px;}
     .flag .navy{width:52px; background:var(--navy);}
     .flag .red{width:28px; background:var(--red);}
@@ -146,10 +144,7 @@
       color:#fff;
       border-color:rgba(0,0,0,.0);
     }
-    button.ghost{
-      background:#fff;
-      color:#000;
-    }
+    button.ghost{background:#fff; color:#000;}
     button:disabled{opacity:.5; cursor:not-allowed;}
 
     .footerRow{
@@ -188,44 +183,26 @@
       background:#fff;
     }
     .small{font-size:.92rem;}
-    /* === Answer feedback flash === */
-.card.flash-correct {
-  background-color: #2ecc71 !important; /* green */
-  transition: background-color 0.25s ease;
-}
 
-.card.flash-wrong {
-  background-color: #e74c3c !important; /* red */
-  transition: background-color 0.25s ease;
-}
-    /* ===== Flash animations (smooth fade back) ===== */
-@keyframes flashGreen {
-  0%   { background-color: #2ecc71; }
-  100% { background-color: var(--panel); }
-}
+    /* ===== Flash animations (smooth fade back to the card's true background) ===== */
+    @keyframes flashGreen {
+      0%   { background-color: #2ecc71; }
+      100% { background-color: #ffffff; }
+    }
 
-@keyframes flashRed {
-  0%   { background-color: #e74c3c; }
-  100% { background-color: var(--panel); }
-}
+    @keyframes flashRed {
+      0%   { background-color: #e74c3c; }
+      100% { background-color: #ffffff; }
+    }
 
-/* Subtle flip flash (neutral / highlight) */
-@keyframes flashFlip {
-  0%   { background-color: rgba(12, 29, 63, 0.12); } /* navy tint */
-  100% { background-color: var(--panel); }
-}
+    @keyframes flashFlip {
+      0%   { background-color: rgba(12, 29, 63, 0.12); }
+      100% { background-color: #ffffff; }
+    }
 
-.flash-correct {
-  animation: flashGreen 2s ease-out;
-}
-
-.flash-wrong {
-  animation: flashRed 2s ease-out;
-}
-
-.flash-flip {
-  animation: flashFlip 300ms ease-out;
-}
+    .flash-correct { animation: flashGreen 2s ease-out; }
+    .flash-wrong   { animation: flashRed 2s ease-out; }
+    .flash-flip    { animation: flashFlip 300ms ease-out; }
 
   </style>
 </head>
@@ -255,7 +232,6 @@
         <span>⭐ Only</span>
       </label>
 
-      <!-- ✅ NEW: Shuffle toggle -->
       <label class="toggle">
         <input type="checkbox" id="shuffleMode" />
         <span>🔄 Shuffle</span>
@@ -279,7 +255,6 @@
   <!-- Flashcards View -->
   <section id="cardsView" class="view">
     <div class="card" id="questionCard">
-
       <div class="cardTop">
         <div class="meta">
           <span id="cardLabel" class="pill">QUESTION</span>
@@ -327,9 +302,7 @@
       </div>
     </div>
 
-    <!-- ✅ Missing wrapper added -->
-   <div class="card" id="interviewCard">
-
+    <div class="card" id="interviewCard">
       <div class="cardTop">
         <div class="meta">
           <span class="pill">QUESTION</span>
@@ -357,21 +330,23 @@
 </main>
 
 <script>
+  // ===== Flash helper + button lock (prevents double-click skipping) =====
+  function lockButtons(btns, ms) {
+    btns.forEach(b => { if (b) b.disabled = true; });
+    setTimeout(() => btns.forEach(b => { if (b) b.disabled = false; }), ms);
+  }
+
   function flashCard(cardEl, type) {
-  if (!cardEl) return;
+    if (!cardEl) return;
 
-  // Remove any existing flash class so re-trigger works instantly
-  cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
+    cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
+    void cardEl.offsetWidth; // restart animation reliably
+    cardEl.classList.add(type);
 
-  // Force reflow so animation restarts reliably
-  void cardEl.offsetWidth;
-
-  cardEl.classList.add(type);
-
-  // Clean up class after animation finishes
-  const ms = (type === 'flash-flip') ? 350 : 2000;
-  setTimeout(() => cardEl.classList.remove(type), ms);
-}
+    const ms = (type === 'flash-flip') ? 350 : 2000;
+    setTimeout(() => cardEl.classList.remove(type), ms);
+    return ms;
+  }
 
   // ---------- State ----------
   let payloadSource = "";
@@ -389,15 +364,15 @@
   // ---------- Elements ----------
   const modeEl = document.getElementById('mode');
   const starOnlyEl = document.getElementById('starOnly');
-
-  // ✅ NEW: Shuffle element
   const shuffleModeEl = document.getElementById('shuffleMode');
-
   const ttsSpeedEl = document.getElementById('ttsSpeed');
   const reloadBtn = document.getElementById('reloadBtn');
 
   const cardsView = document.getElementById('cardsView');
   const interviewView = document.getElementById('interviewView');
+
+  const questionCard = document.getElementById('questionCard');
+  const interviewCard = document.getElementById('interviewCard');
 
   const cardLabel = document.getElementById('cardLabel');
   const cardNum = document.getElementById('cardNum');
@@ -432,7 +407,6 @@
 
   // ---------- Helpers ----------
   function shuffleArray(arr) {
-    // Fisher–Yates shuffle (in-place copy)
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -443,8 +417,6 @@
 
   function applyFilter() {
     const base = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
-
-    // ✅ NEW: shuffle when toggle is on
     items = shuffleModeEl.checked ? shuffleArray(base) : base;
 
     if (!items.length) {
@@ -463,7 +435,6 @@
     const it = items[idx];
     cardNum.textContent = "#" + it.id;
     cardStar.classList.toggle('hidden', !it.starred);
-
     qText.textContent = it.question;
 
     aBox.innerHTML = it.answers.map(a => `
@@ -540,6 +511,9 @@
 
   // ---------- Flashcards Events ----------
   flipBtn.addEventListener('click', () => {
+    // subtle flash only on flip
+    flashCard(questionCard, 'flash-flip');
+
     showAnswer = !showAnswer;
     renderCard();
   });
@@ -589,7 +563,9 @@
     }
     iNum.textContent = "#" + it.id;
     iQuestion.textContent = it.question;
-    iAnswers.innerHTML = it.answers.map(a => `<div class="aLine"><span class="bullet"></span><div>${escapeHtml(a)}</div></div>`).join("");
+    iAnswers.innerHTML = it.answers.map(a =>
+      `<div class="aLine"><span class="bullet"></span><div>${escapeHtml(a)}</div></div>`
+    ).join("");
     iAnswersWrap.open = false;
   }
 
@@ -603,13 +579,12 @@
     `;
     if (missed.length) {
       reviewMissedBtn.classList.remove('hidden');
-      reviewMissedBtn.textContent = `Review Missed (${missed.length})`;
+      reviewMissedBtn.textContent = \`Review Missed (\${missed.length})\`;
     }
   }
 
   startInterviewBtn.addEventListener('click', () => {
     if (!items.length) return alert("Load questions first (Flashcards view).");
-    // Interview is always randomized
     const pool = items.slice().sort(() => Math.random() - 0.5);
     interviewStart(pool);
   });
@@ -639,23 +614,35 @@
     speak("Question. " + it.question);
   });
 
+  // ✅ Flash + lock during scoring so you don't skip questions accidentally
   markCorrectBtn.addEventListener('click', () => {
     const it = interviewQueue[interviewIndex];
     if (!it) return;
+
+    const ms = flashCard(interviewCard, 'flash-correct');
+    lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
+
     correct++; asked++;
     interviewIndex++;
     resetInterviewUI();
-    showInterviewQuestion();
+
+    // show next question AFTER flash so user sees the feedback
+    setTimeout(showInterviewQuestion, ms);
   });
 
   markWrongBtn.addEventListener('click', () => {
     const it = interviewQueue[interviewIndex];
     if (!it) return;
+
+    const ms = flashCard(interviewCard, 'flash-wrong');
+    lockButtons([markCorrectBtn, markWrongBtn, startInterviewBtn, resetInterviewBtn, reviewMissedBtn], ms);
+
     wrong++; asked++;
     if (!missed.find(x => x.id === it.id)) missed.push(it);
     interviewIndex++;
     resetInterviewUI();
-    showInterviewQuestion();
+
+    setTimeout(showInterviewQuestion, ms);
   });
 
   // ---------- Mode switching ----------
@@ -667,10 +654,7 @@
 
   modeEl.addEventListener('change', () => setMode(modeEl.value));
   starOnlyEl.addEventListener('change', () => applyFilter());
-
-  // ✅ NEW: Shuffle toggle reshuffles immediately
   shuffleModeEl.addEventListener('change', () => applyFilter());
-
   reloadBtn.addEventListener('click', () => loadQuestions());
 
   // Start
