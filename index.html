@@ -1038,11 +1038,21 @@ header {
     shuffleModeEl.addEventListener('change', () => applyFilter());
     reloadBtn.addEventListener('click', () => loadQuestions());
     
-/* ===== Add User Button Wiring ===== */
-const addUserBtn = document.getElementById("addUserBtn");
-
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
+ // ✅ SINGLE Add User click handler (only one)
+document.addEventListener("click", (e) => {
+  const hit = e.target.closest("#addUserBtn, .add-user");
+  if (!hit) return;
+
+  const raw = prompt("New user name?");
+  if (raw === null) return;
+
+  const name = normName(raw);
+  if (!name) return;
+
+  const users = loadUsers();
+  const exists = users.some(u => (u || "").
 
     // Start
     setMode("cards");
