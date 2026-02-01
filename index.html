@@ -1052,6 +1052,8 @@ if (addUserBtn) {
   });
 }
 
+    const USERS_KEY = "ctp_users";
+const CURRENT_USER_KEY = "ctp_current_user";
 
     // Start
     setMode("cards");
@@ -1089,8 +1091,6 @@ btn.addEventListener("click", () => {
   
 
 });
-    const USERS_KEY = "ctp_users";
-const CURRENT_USER_KEY = "ctp_current_user";
 
 function normName(name){
   return (name || "").trim().replace(/\s+/g, " ");
@@ -1106,8 +1106,8 @@ function saveUsers(users){
 }
 function renderHeaderUser(){
   const btn =
-    document.getElementById("addUserBtn") ||
-    document.querySelector(".add-user");
+document.getElementById("addUserBtn") || document.querySelector(".add-user");
+
   if (!btn) return;
 
   let wrap = document.getElementById("headerUserWrap");
