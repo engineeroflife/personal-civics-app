@@ -1127,9 +1127,15 @@ if (addUserBtn) {
     const name = prompt("New user name?");
     if (!name) return;
 
-    profilesCreate(name);
+    const newId = profilesCreate(name);
+
+    if (!newId) {
+      alert("That user name already exists. Please choose a different name.");
+      return;
+    }
+
     renderActiveUser();
-  alert(`User "${name}" created.`);
+    alert(`User "${name}" created.`);
   });
 }
 /* ===== Switch User Popup Wiring ===== */
