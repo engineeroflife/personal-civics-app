@@ -193,12 +193,7 @@
     "category": "American Government",
     "section": "B: System of Government"
   },
-  {
-    "id": 17,
-    "question": "The President of the United States is in charge of which branch of government?",
-    "answers": [
-      "Executive branch"
-    ],
+  {"id": 17, "question": "The President of the United States is in charge of which branch of government?", "answers": ["Executive branch"  ],
     "is_star": false,
     "category": "American Government",
     "section": "B: System of Government"
