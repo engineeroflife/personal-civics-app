@@ -442,6 +442,7 @@ header {
           <button id="speakABtn">🔊 Speak A</button>
           <button id="addPracticeBtn">💡 Needs Practice</button>
           <button id="nextBtn">Next ▶</button>
+          <button id="addUserBtn" type="button">➕ Add User</button>
         </div>
 
         <div class="footerRow">
@@ -1035,6 +1036,21 @@ header {
     starOnlyEl.addEventListener('change', () => applyFilter());
     shuffleModeEl.addEventListener('change', () => applyFilter());
     reloadBtn.addEventListener('click', () => loadQuestions());
+    
+/* ===== Add User Button Wiring ===== */
+const addUserBtn = document.getElementById("addUserBtn");
+
+if (addUserBtn) {
+  addUserBtn.addEventListener("click", () => {
+    const name = prompt("New user name?");
+    if (!name) return;
+
+    profilesCreate(name);
+
+    // Optional UX feedback
+    alert(`User "${name}" created. You can now switch users.`);
+  });
+}
 
     // Start
     setMode("cards");
