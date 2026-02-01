@@ -380,6 +380,7 @@ header {
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
+        <div id="activeUserLabel" class="muted small"></div>
     </div>
   </div>
  </div>
@@ -567,6 +568,16 @@ header {
     profilesSave(store);
     return id;
   }
+    function renderActiveUser(){
+  const label = document.getElementById("activeUserLabel");
+  if (!label) return;
+
+  const store = profilesLoad();
+  const active = store.profiles[store.activeId];
+
+  label.textContent = (active && active.name) ? `User: ${active.name}` : "";
+}
+
     // ===== Helpers: flash + lock + screen tint + vibration =====
     function lockButtons(btns, ms) {
       btns.forEach(b => { if (b) b.disabled = true; });
@@ -1045,7 +1056,7 @@ if (addUserBtn) {
     const name = prompt("New user name?");
     if (!name) return;
 
-    profilesCreate(name);
+   renderActiveUser();
 
     alert(`User "${name}" created.`);
   });
@@ -1056,7 +1067,11 @@ if (addUserBtn) {
     setMode("cards");
     loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
     loadQuestions();
-    window.addEventListener("load", profilesEnsure);
+   window.addEventListener("load", () => {
+  profilesEnsure();
+  renderActiveUser();
+});
+
 
   </script>
 </body>
