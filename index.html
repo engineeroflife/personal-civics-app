@@ -356,8 +356,15 @@ header {
 @media (max-width: 520px){
   .header .logo{ height: 76px; }
   .header{ gap: 12px; }
+  
+}
+#userBadge,
+.user-badge,
+.user-pill {
+  display: none !important;
 }
 
+    
   </style>
 </head>
 
@@ -1070,7 +1077,7 @@ document.addEventListener("click", (e) => {
 
     // Start
     setMode("cards");
-    loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
+    loadPracticeIds();   
     loadQuestions();
     window.addEventListener("load", profilesEnsure);
 
