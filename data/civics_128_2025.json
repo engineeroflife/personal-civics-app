@@ -1,7 +1,5 @@
 {
-  "version": "USCIS 2025",
-  "source": "USCIS M-1778 (09/25)",
-  "questions": [
+  "items": [
     {
       "id": 1,
       "question": "What is the form of government of the United States?",
@@ -1566,4 +1564,3 @@
     }
   ]
 }
-
