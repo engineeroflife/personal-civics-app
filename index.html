@@ -1066,11 +1066,31 @@ if (addUserBtn) {
     const name = prompt("New user name?");
     if (!name) return;
 
-   renderActiveUser();
+    profilesCreate(name);
+    renderActiveUser();
 
     alert(`User "${name}" created.`);
   });
 }
+/* ===== Switch User Popup Wiring ===== */
+const activeUserLabel = document.getElementById("activeUserLabel");
+if (activeUserLabel) {
+  activeUserLabel.title = "Tap to switch user";
+  activeUserLabel.addEventListener("click", openUserPicker);
+}
+
+const closeUserPickerBtn = document.getElementById("closeUserPickerBtn");
+if (closeUserPickerBtn) {
+  closeUserPickerBtn.addEventListener("click", closeUserPicker);
+}
+
+const userPicker = document.getElementById("userPicker");
+if (userPicker) {
+  userPicker.addEventListener("click", (e) => {
+    if (e.target === userPicker) closeUserPicker();
+  });
+}
+
 
 
     // Start
