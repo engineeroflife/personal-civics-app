@@ -1067,6 +1067,93 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof openAddUser === "function") openAddUser();
   });
 });
+    const USERS_KEY = "ctp_users";
+const CURRENT_USER_KEY = "ctp_current_user";
+
+function normName(name){
+  return (name || "").trim().replace(/\s+/g, " ");
+}
+
+function loadUsers(){
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveUsers(users){
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function setCurrentUser(name){
+  localStorage.setItem(CURRENT_USER_KEY, name);
+  renderUserBadge();
+}
+
+function getCurrentUser(){
+  return localStorage.getItem(CURRENT_USER_KEY) || "";
+}
+
+/** Creates/updates a small "User: ___" badge at the bottom */
+function renderUserBadge(){
+  // If badge doesn't exist, create it
+  let badge = document.getElementById("currentUserBadge");
+  if (!badge){
+    badge = document.createElement("div");
+    badge.id = "currentUserBadge";
+
+    // Style: fixed at bottom, centered, clean
+    badge.style.position = "fixed";
+    badge.style.left = "50%";
+    badge.style.transform = "translateX(-50%)";
+    badge.style.bottom = "10px";
+    badge.style.zIndex = "9999";
+    badge.style.padding = "8px 12px";
+    badge.style.borderRadius = "999px";
+    badge.style.background = "rgba(246,247,249,.95)";
+    badge.style.border = "1px solid rgba(0,0,0,.10)";
+    badge.style.boxShadow = "0 10px 26px rgba(0,0,0,.10)";
+    badge.style.fontFamily = "inherit";
+    badge.style.fontSize = "14px";
+    badge.style.fontWeight = "700";
+    badge.style.color = "var(--navy, #0C1D3F)";
+    badge.style.pointerEvents = "none"; // doesn’t block clicks
+
+    document.body.appendChild(badge);
+  }
+
+  const name = getCurrentUser();
+  badge.textContent = name ? `User: ${name}` : "User: —";
+}
+
+/** Click flow for + Add User with duplicate blocking */
+function addUserFlow(){
+  const raw = prompt("Enter a user name:");
+  if (raw === null) return;
+
+  const name = normName(raw);
+  if (!name) return;
+
+  const users = loadUsers();
+  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
+
+  if (exists){
+    alert("That user already exists. Please choose a different name.");
+    return;
+  }
+
+  users.push(name);
+  saveUsers(users);
+  setCurrentUser(name);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Wire your header button (works with id OR class)
+  const btn = document.getElementById("addUserBtn") || document.querySelector(".add-user");
+  if (btn) btn.addEventListener("click", addUserFlow);
+
+  // Show badge on load/refresh
+  renderUserBadge();
+});
+
   </script>
 </body>
 </html>
