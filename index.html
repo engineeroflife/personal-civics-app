@@ -563,35 +563,35 @@ header {
     return store;
   }
 
-  function profilesCreate(name){
-    const clean = (name || "").trim().replace(/\s+/g, " ");
-if (!clean) return null;
+  function profilesCreate(name){function profilesCreate(name){
+  const clean = (name || "").trim().replace(/\s+/g, " ");
+  if (!clean) return null;
 
-const store = profilesEnsure();
-const wanted = normalizeName(clean);
+  const store = profilesEnsure();
+  const wanted = normalizeName(clean);
 
-// block duplicates (case-insensitive)
-for (const id in store.profiles){
-  const p = store.profiles[id];
-  if (normalizeName(p.name) === wanted){
-    return null; // signal "already exists"
+  // block duplicates (case-insensitive)
+  for (const pid in store.profiles){
+    const p = store.profiles[pid];
+    if (normalizeName(p.name) === wanted) return null;
   }
+
+  const id = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : String(Date.now());
+
+  store.activeId = id;
+  store.profiles[id] = {
+    id,
+    name: clean,
+    createdAt: Date.now(),
+    stats: { correct: 0, wrong: 0 }
+  };
+
+  profilesSave(store);
+  return id;
 }
 
-    const store = profilesEnsure();
-    const id = (window.crypto && crypto.randomUUID)
-      ? crypto.randomUUID()
-      : String(Date.now());
-    store.profiles[id] = {
-      id,
-      name: (name || "New user").trim(),
-      createdAt: Date.now(),
-      stats: { correct: 0, wrong: 0 }
-    };
-    store.activeId = id;
-    profilesSave(store);
-    return id;
-  }
     function renderActiveUser(){
   const label = document.getElementById("activeUserLabel");
   if (!label) return;
@@ -1138,6 +1138,7 @@ if (addUserBtn) {
     alert(`User "${name}" created.`);
   });
 }
+
 /* ===== Switch User Popup Wiring ===== */
 const activeUserLabel = document.getElementById("activeUserLabel");
 if (activeUserLabel) {
@@ -1162,11 +1163,12 @@ if (userPicker) {
     // Start
     setMode("cards");
     loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
-    loadQuestions();
-   window.addEventListener("load", () => {
+     window.addEventListener("load", () => {
   profilesEnsure();
   renderActiveUser();
-});
+});  
+  loadQuestions();
+
 
 
   </script>
