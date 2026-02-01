@@ -1040,7 +1040,7 @@ header {
     
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
- // ✅ SINGLE Add User click handler (only one)
+// ✅ SINGLE Add User click handler (only one)
 document.addEventListener("click", (e) => {
   const hit = e.target.closest("#addUserBtn, .add-user");
   if (!hit) return;
@@ -1052,7 +1052,21 @@ document.addEventListener("click", (e) => {
   if (!name) return;
 
   const users = loadUsers();
-  const exists = users.some(u => (u || "").
+  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
+
+  if (exists){
+    alert("That user already exists.");
+    return;
+  }
+
+  users.push(name);
+  saveUsers(users);
+  localStorage.setItem(CURRENT_USER_KEY, name);
+
+  if (typeof renderHeaderUser === "function") renderHeaderUser();
+  if (typeof renderUserBadge === "function") renderUserBadge();
+});
+
 
     // Start
     setMode("cards");
