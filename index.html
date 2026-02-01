@@ -27,6 +27,8 @@
       font-family:var(--font);
       background:var(--bg);
       color:var(--ink);
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior: none;
     }
     header{
       position:sticky; top:0; z-index:10;
@@ -34,6 +36,7 @@
       backdrop-filter:saturate(180%) blur(14px);
       border-bottom:1px solid var(--stroke);
       padding:14px 16px;
+      padding-top: calc(14px + env(safe-area-inset-top));
     }
     .wrap{max-width:var(--max); margin:0 auto;}
     .brandRow{display:flex; align-items:center; justify-content:space-between; gap:12px;}
@@ -47,6 +50,7 @@
     .controls{
       display:flex; flex-wrap:wrap;
       gap:10px; align-items:center; justify-content:flex-end;
+      width:100%;
     }
     select, .chipBtn{
       height:38px;
@@ -67,7 +71,10 @@
       font-size:.95rem;
     }
     .toggle input{transform:scale(1.1)}
-    main{padding:18px 16px;}
+    main{
+      padding:18px 16px;
+      padding-bottom: calc(18px + env(safe-area-inset-bottom));
+    }
     .view{max-width:var(--max); margin:0 auto;}
     .hidden{display:none !important;}
 
@@ -97,13 +104,15 @@
       font-weight:700;
       letter-spacing:.9px;
     }
-    /* 💡 Practice badge */
-.pill.practice{
-  background: rgba(255, 204, 0, 0.18);   /* soft iOS yellow */
-  border-color: rgba(255, 204, 0, 0.45);
-  color: #8a6a00;
-}
     .pill.star{color:#000;}
+
+    /* 💡 Practice badge */
+    .pill.practice{
+      background: rgba(255, 204, 0, 0.18);
+      border-color: rgba(255, 204, 0, 0.45);
+      color: #8a6a00;
+    }
+
     .dot{color:rgba(0,0,0,.45)}
     .muted{color:var(--muted)}
     .questionText{
@@ -191,18 +200,9 @@
     .small{font-size:.92rem;}
 
     /* ===== Card flash animations ===== */
-    @keyframes flashGreen {
-      0%   { background-color: #2ecc71; }
-      100% { background-color: #ffffff; }
-    }
-    @keyframes flashRed {
-      0%   { background-color: #e74c3c; }
-      100% { background-color: #ffffff; }
-    }
-    @keyframes flashFlip {
-      0%   { background-color: rgba(12, 29, 63, 0.12); }
-      100% { background-color: #ffffff; }
-    }
+    @keyframes flashGreen { 0%{background-color:#2ecc71;} 100%{background-color:#ffffff;} }
+    @keyframes flashRed   { 0%{background-color:#e74c3c;} 100%{background-color:#ffffff;} }
+    @keyframes flashFlip  { 0%{background-color:rgba(12,29,63,.12);} 100%{background-color:#ffffff;} }
     .flash-correct { animation: flashGreen 2s ease-out; }
     .flash-wrong   { animation: flashRed 2s ease-out; }
     .flash-flip    { animation: flashFlip 300ms ease-out; }
@@ -215,74 +215,21 @@
       opacity: 0;
       z-index: 9999;
     }
-    @keyframes screenGreen {
-      0%   { opacity: 0.22; }
-      100% { opacity: 0; }
+    @keyframes screenGreen { 0%{opacity:.22;} 100%{opacity:0;} }
+    @keyframes screenRed   { 0%{opacity:.22;} 100%{opacity:0;} }
+    #screenFlash.green { background:#2ecc71; animation: screenGreen 2s ease-out; }
+    #screenFlash.red   { background:#e74c3c; animation: screenRed 2s ease-out; }
+
+    /* ===== iPhone portrait fit ===== */
+    html, body { height: 100%; max-width: 100%; overflow-x: hidden; }
+
+    @media (max-width: 520px) {
+      .brandRow { flex-direction: column; align-items: flex-start; }
+      .controls { justify-content: flex-start; }
+      .btnRow button { flex: 1 1 100%; }
+      .questionText { font-size: 1.18rem; }
+      .card { padding: 14px; }
     }
-    @keyframes screenRed {
-      0%   { opacity: 0.22; }
-      100% { opacity: 0; }
-    }
-    #screenFlash.green {
-      background: #2ecc71;
-      animation: screenGreen 2s ease-out;
-    }
-    #screenFlash.red {
-      background: #e74c3c;
-      animation: screenRed 2s ease-out;
-    }
-    /* ===== iPhone portrait fit & safe areas ===== */
-html, body {
-  height: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Safe-area padding so content doesn't hide behind notch / home indicator */
-header {
-  padding-top: calc(14px + env(safe-area-inset-top));
-}
-
-main {
-  padding-bottom: calc(18px + env(safe-area-inset-bottom));
-}
-
-/* Prevent controls from forcing horizontal scrolling */
-.controls {
-  width: 100%;
-}
-
-/* On small screens: stack header rows nicely */
-@media (max-width: 520px) {
-  .brandRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .controls {
-    justify-content: flex-start;
-  }
-
-  /* Buttons fill width nicely in portrait */
-  .btnRow button {
-    flex: 1 1 100%;
-  }
-
-  /* Slightly smaller question text so it fits */
-  .questionText {
-    font-size: 1.18rem;
-  }
-
-  /* Reduce card padding a bit */
-  .card {
-    padding: 14px;
-  }
-}
-  body {
-  -webkit-text-size-adjust: 100%;
-  overscroll-behavior: none;
-}
-
   </style>
 </head>
 
@@ -342,8 +289,8 @@ main {
             <span id="cardLabel" class="pill">QUESTION</span>
             <span class="dot">•</span>
             <span id="cardNum" class="muted">#—</span>
-          <span id="cardStar" class="pill star hidden">⭐</span>
-       
+            <span id="cardStar" class="pill star hidden">⭐</span>
+            <span id="practiceBadge" class="pill practice hidden">💡 PRACTICE</span>
           </div>
           <button class="ghost" id="flipBtn">Show Answer</button>
         </div>
@@ -356,7 +303,7 @@ main {
           <button id="prevBtn">◀ Prev</button>
           <button id="speakQBtn">🔊 Speak Q</button>
           <button id="speakABtn">🔊 Speak A</button>
-          <button id="addPracticeBtn">⭐ Needs Practice</button>
+          <button id="addPracticeBtn">💡 Needs Practice</button>
           <button id="nextBtn">Next ▶</button>
         </div>
 
@@ -411,28 +358,26 @@ main {
         <div id="result" class="result hidden"></div>
       </div>
     </section>
+
     <!-- Practice List View -->
-<section id="practiceView" class="view hidden">
-  <div class="panel">
-    <div class="panelRow">
-      <div class="kpis">
-        <div class="kpi">Saved: <b id="practiceCount">0</b></div>
+    <section id="practiceView" class="view hidden">
+      <div class="panel">
+        <div class="panelRow">
+          <div class="kpis">
+            <div class="kpi">Saved: <b id="practiceCount">0</b></div>
+          </div>
+          <div class="kpis">
+            <button id="startPracticeBtn" class="primary">Start Practice</button>
+            <button id="clearPracticeBtn" class="ghost">Clear</button>
+          </div>
+        </div>
       </div>
-      <div class="kpis">
-        <button id="startPracticeBtn" class="primary">Start Practice</button>
-        <button id="clearPracticeBtn" class="ghost">Clear</button>
+
+      <div class="card">
+        <p class="questionText" style="margin-bottom:10px;">Your Practice List</p>
+        <div id="practiceList" class="answers">Loading…</div>
       </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <p class="questionText" style="margin-bottom:10px;">Your Practice List</p>
-    <div id="practiceList" class="answers">
-      Loading…
-    </div>
-  </div>
-</section>
-
+    </section>
   </main>
 
   <script>
@@ -444,11 +389,9 @@ main {
 
     function flashCard(cardEl, type) {
       if (!cardEl) return 0;
-
       cardEl.classList.remove('flash-correct', 'flash-wrong', 'flash-flip');
-      void cardEl.offsetWidth; // restart animation reliably
+      void cardEl.offsetWidth;
       cardEl.classList.add(type);
-
       const ms = (type === 'flash-flip') ? 350 : 2000;
       setTimeout(() => cardEl.classList.remove(type), ms);
       return ms;
@@ -457,16 +400,34 @@ main {
     function flashScreen(isCorrect) {
       const el = document.getElementById('screenFlash');
       if (!el) return;
-
       el.classList.remove('green', 'red');
       void el.offsetWidth;
       el.classList.add(isCorrect ? 'green' : 'red');
-
       setTimeout(() => el.classList.remove('green', 'red'), 2000);
     }
 
     function vibrateWrong() {
       if (navigator.vibrate) navigator.vibrate(200);
+    }
+
+    // ===== Practice List storage (FIXES practiceIds not defined) =====
+    const PRACTICE_KEY = "civics_practice_ids_v1";
+    let practiceIds = new Set();
+
+    function loadPracticeIds() {
+      try {
+        const raw = localStorage.getItem(PRACTICE_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        practiceIds = new Set(Array.isArray(arr) ? arr : []);
+      } catch {
+        practiceIds = new Set();
+      }
+    }
+    function savePracticeIds() {
+      localStorage.setItem(PRACTICE_KEY, JSON.stringify([...practiceIds]));
+    }
+    function getPracticeItems() {
+      return allItems.filter(q => practiceIds.has(q.id));
     }
 
     // ---------- State ----------
@@ -491,6 +452,7 @@ main {
 
     const cardsView = document.getElementById('cardsView');
     const interviewView = document.getElementById('interviewView');
+    const practiceView = document.getElementById('practiceView');
 
     const questionCard = document.getElementById('questionCard');
     const interviewCard = document.getElementById('interviewCard');
@@ -499,6 +461,7 @@ main {
     const cardNum = document.getElementById('cardNum');
     const cardStar = document.getElementById('cardStar');
     const practiceBadge = document.getElementById('practiceBadge');
+
     const qText = document.getElementById('qText');
     const aBox = document.getElementById('aBox');
     const flipBtn = document.getElementById('flipBtn');
@@ -507,6 +470,8 @@ main {
     const nextBtn = document.getElementById('nextBtn');
     const speakQBtn = document.getElementById('speakQBtn');
     const speakABtn = document.getElementById('speakABtn');
+    const addPracticeBtn = document.getElementById('addPracticeBtn');
+
     const progressText = document.getElementById('progressText');
     const sourceText = document.getElementById('sourceText');
     const loadNotice = document.getElementById('loadNotice');
@@ -527,6 +492,11 @@ main {
     const markCorrectBtn = document.getElementById('markCorrectBtn');
     const resultBox = document.getElementById('result');
 
+    const practiceCount = document.getElementById('practiceCount');
+    const practiceList = document.getElementById('practiceList');
+    const startPracticeBtn = document.getElementById('startPracticeBtn');
+    const clearPracticeBtn = document.getElementById('clearPracticeBtn');
+
     // ---------- Helpers ----------
     function shuffleArray(arr) {
       const a = arr.slice();
@@ -537,6 +507,56 @@ main {
       return a;
     }
 
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, m => ({
+        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+      }[m]));
+    }
+
+    function renderPracticeList() {
+      const list = getPracticeItems();
+      practiceCount.textContent = String(list.length);
+
+      if (!list.length) {
+        practiceList.innerHTML = `<div class="muted">No saved questions yet. Use 💡 Needs Practice or mark Incorrect in Interview Mode.</div>`;
+        return;
+      }
+
+      practiceList.innerHTML = list.map(q => `
+        <div style="padding:10px 0; border-bottom:1px solid rgba(0,0,0,.06);">
+          <div style="font-weight:800;">#${q.id} — ${escapeHtml(q.question)}</div>
+          <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button data-open="${q.id}" class="ghost" style="flex:0 0 auto;">Open</button>
+            <button data-remove="${q.id}" style="flex:0 0 auto;">Remove</button>
+          </div>
+        </div>
+      `).join("");
+
+      practiceList.querySelectorAll('[data-open]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.getAttribute('data-open'));
+          const pos = items.findIndex(x => x.id === id);
+          if (pos >= 0) {
+            idx = pos;
+            showAnswer = false;
+            setMode("cards");
+            renderCard();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        });
+      });
+
+      practiceList.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.getAttribute('data-remove'));
+          practiceIds.delete(id);
+          savePracticeIds();
+          renderPracticeList();
+          renderCard();
+        });
+      });
+    }
+
     function applyFilter() {
       const base = starOnlyEl.checked ? allItems.filter(x => !!x.starred) : [...allItems];
       items = shuffleModeEl.checked ? shuffleArray(base) : base;
@@ -545,6 +565,7 @@ main {
         qText.textContent = "No questions found for this filter.";
         aBox.classList.add('hidden');
         progressText.textContent = "";
+        sourceText.textContent = "";
         return;
       }
       idx = 0;
@@ -555,9 +576,13 @@ main {
     function renderCard() {
       if (!items.length) return;
       const it = items[idx];
+
       cardNum.textContent = "#" + it.id;
       cardStar.classList.toggle('hidden', !it.starred);
+
+      // show badge only if saved for practice
       practiceBadge.classList.toggle('hidden', !practiceIds.has(it.id));
+
       qText.textContent = it.question;
 
       aBox.innerHTML = it.answers.map(a => `
@@ -576,12 +601,6 @@ main {
       nextBtn.disabled = (idx === items.length - 1);
     }
 
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, m => ({
-        "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
-      }[m]));
-    }
-
     function ttsRate() {
       return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
     }
@@ -596,7 +615,7 @@ main {
       speechSynthesis.speak(u);
     }
 
-    // ---------- Data Load (with timeout so you don't get stuck on Loading...) ----------
+    // ---------- Data Load ----------
     async function loadQuestions() {
       loadNotice.classList.add('hidden');
       qText.textContent = "Loading questions…";
@@ -621,7 +640,9 @@ main {
 
         payloadSource = json.source || "";
         allItems = json.items;
+
         applyFilter();
+        renderPracticeList();
 
       } catch (err) {
         clearTimeout(timeoutId);
@@ -664,6 +685,17 @@ main {
     speakABtn.addEventListener('click', () => {
       if (!items.length) return;
       speak("Answer. " + items[idx].answers.join(". "));
+    });
+
+    // Save current flashcard into practice list
+    addPracticeBtn.addEventListener('click', () => {
+      if (!items.length) return;
+      const id = items[idx].id;
+      practiceIds.add(id);
+      savePracticeIds();
+      flashScreen(true);
+      renderCard();         // shows badge immediately
+      renderPracticeList(); // updates Practice view
     });
 
     // ---------- Interview ----------
@@ -744,7 +776,6 @@ main {
       speak("Question. " + it.question);
     });
 
-    // ✅ Correct: green + screen tint, lock, then next question
     markCorrectBtn.addEventListener('click', () => {
       const it = interviewQueue[interviewIndex];
       if (!it) return;
@@ -759,7 +790,7 @@ main {
       setTimeout(showInterviewQuestion, ms);
     });
 
-    // ✅ Wrong: vibrate + red screen tint, lock, then next question
+    // Wrong = vibrate + auto-add to practice list
     markWrongBtn.addEventListener('click', () => {
       const it = interviewQueue[interviewIndex];
       if (!it) return;
@@ -771,16 +802,48 @@ main {
 
       wrong++; asked++;
       if (!missed.find(x => x.id === it.id)) missed.push(it);
+
+      // ✅ auto-save wrong answers to practice list
+      practiceIds.add(it.id);
+      savePracticeIds();
+      renderPracticeList();
+      renderCard();
+
       interviewIndex++;
       resetInterviewUI();
       setTimeout(showInterviewQuestion, ms);
     });
 
+    // ---------- Practice View buttons ----------
+    startPracticeBtn.addEventListener('click', () => {
+      const list = getPracticeItems();
+      if (!list.length) return alert("Your Practice List is empty.");
+      items = list.slice();
+      idx = 0;
+      showAnswer = false;
+      setMode("cards");
+      renderCard();
+    });
+
+    clearPracticeBtn.addEventListener('click', () => {
+      if (!practiceIds.size) return;
+      practiceIds.clear();
+      savePracticeIds();
+      renderPracticeList();
+      renderCard();
+    });
+
     // ---------- Mode switching ----------
     function setMode(m) {
+      const isCards = (m === "cards");
       const isInterview = (m === "interview");
-      cardsView.classList.toggle('hidden', isInterview);
+      const isPractice = (m === "practice");
+
+      cardsView.classList.toggle('hidden', !isCards);
       interviewView.classList.toggle('hidden', !isInterview);
+      practiceView.classList.toggle('hidden', !isPractice);
+
+      if (isPractice) renderPracticeList();
     }
 
     modeEl.addEventListener('change', () => setMode(modeEl.value));
@@ -790,6 +853,7 @@ main {
 
     // Start
     setMode("cards");
+    loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
     loadQuestions();
   </script>
 </body>
