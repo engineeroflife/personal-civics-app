@@ -564,6 +564,20 @@ header {
   }
 
   function profilesCreate(name){
+    const clean = (name || "").trim().replace(/\s+/g, " ");
+if (!clean) return null;
+
+const store = profilesEnsure();
+const wanted = normalizeName(clean);
+
+// block duplicates (case-insensitive)
+for (const id in store.profiles){
+  const p = store.profiles[id];
+  if (normalizeName(p.name) === wanted){
+    return null; // signal "already exists"
+  }
+}
+
     const store = profilesEnsure();
     const id = (window.crypto && crypto.randomUUID)
       ? crypto.randomUUID()
