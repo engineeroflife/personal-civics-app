@@ -586,7 +586,45 @@ header {
   const active = store.profiles[store.activeId];
 
   label.textContent = (active && active.name) ? `User: ${active.name}` : "";
+}function profilesSetActive(id){
+  const store = profilesLoad();
+  if (store.profiles && store.profiles[id]) {
+    store.activeId = id;
+    profilesSave(store);
+  }
 }
+
+function openUserPicker(){
+  const picker = document.getElementById("userPicker");
+  const list = document.getElementById("userList");
+  if (!picker || !list) return;
+
+  const store = profilesLoad();
+  const profiles = Object.values(store.profiles || {});
+
+  list.innerHTML = "";
+
+  profiles.forEach(p => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = p.name || "User";
+    btn.addEventListener("click", () => {
+      profilesSetActive(p.id);
+      renderActiveUser();
+      closeUserPicker();
+      location.reload();
+    });
+    list.appendChild(btn);
+  });
+
+  picker.classList.remove("hidden");
+}
+
+function closeUserPicker(){
+  const picker = document.getElementById("userPicker");
+  if (picker) picker.classList.add("hidden");
+}
+
 
     // ===== Helpers: flash + lock + screen tint + vibration =====
     function lockButtons(btns, ms) {
@@ -1068,8 +1106,7 @@ if (addUserBtn) {
 
     profilesCreate(name);
     renderActiveUser();
-
-    alert(`User "${name}" created.`);
+  alert(`User "${name}" created.`);
   });
 }
 /* ===== Switch User Popup Wiring ===== */
