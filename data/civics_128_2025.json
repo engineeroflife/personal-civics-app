@@ -261,7 +261,8 @@
       "id": 23,
       "question": "Who is one of your state’s U.S. senators now?",
       "answers": [
-        "Answers will vary. [District of Columbia residents and residents of U.S. territories should answer that D.C. (or the territory where the applicant lives) has no U.S. senators.]"
+        "Rick Scott",
+        "Ashley Moody"
       ],
       "is_star": false,
       "category": "American Government",
