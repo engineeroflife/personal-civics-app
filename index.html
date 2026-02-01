@@ -564,20 +564,6 @@ header {
   }
 
   function profilesCreate(name){
-    const clean = (name || "").trim().replace(/\s+/g, " ");
-if (!clean) return null;
-
-const store = profilesEnsure();
-const wanted = normalizeName(clean);
-
-// block duplicates (case-insensitive)
-for (const id in store.profiles){
-  const p = store.profiles[id];
-  if (normalizeName(p.name) === wanted){
-    return null; // signal "already exists"
-  }
-}
-
     const store = profilesEnsure();
     const id = (window.crypto && crypto.randomUUID)
       ? crypto.randomUUID()
@@ -607,10 +593,7 @@ for (const id in store.profiles){
     profilesSave(store);
   }
 }
- function normalizeName(name){
-  return (name || "").trim().replace(/\s+/g, " ").toLowerCase();
-}
-   
+
 function openUserPicker(){
   const picker = document.getElementById("userPicker");
   const list = document.getElementById("userList");
@@ -619,12 +602,8 @@ function openUserPicker(){
   const store = profilesLoad();
   const profiles = Object.values(store.profiles || {});
 
-  // Sort by newest first (optional)
-  profiles.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
-
   list.innerHTML = "";
 
-  // Show each profile once (by id), but display clean name
   profiles.forEach(p => {
     const btn = document.createElement("button");
     btn.type = "button";
@@ -633,7 +612,6 @@ function openUserPicker(){
       profilesSetActive(p.id);
       renderActiveUser();
       closeUserPicker();
-      // Reload so the app is clean for the new active user
       location.reload();
     });
     list.appendChild(btn);
@@ -641,7 +619,6 @@ function openUserPicker(){
 
   picker.classList.remove("hidden");
 }
-
 
 function closeUserPicker(){
   const picker = document.getElementById("userPicker");
@@ -1127,15 +1104,9 @@ if (addUserBtn) {
     const name = prompt("New user name?");
     if (!name) return;
 
-    const newId = profilesCreate(name);
-
-    if (!newId) {
-      alert("That user name already exists. Please choose a different name.");
-      return;
-    }
-
+    profilesCreate(name);
     renderActiveUser();
-    alert(`User "${name}" created.`);
+  alert(`User "${name}" created.`);
   });
 }
 /* ===== Switch User Popup Wiring ===== */
