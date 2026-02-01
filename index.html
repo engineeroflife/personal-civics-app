@@ -1062,10 +1062,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("addUserBtn");
   if (!btn) return;
 
-  btn.addEventListener("click", () => {
-    // ✅ Replace openAddUser() with whatever your project already uses
-    if (typeof openAddUser === "function") openAddUser();
-  });
+btn.addEventListener("click", () => {
+  const raw = prompt("Enter a user name:");
+  if (raw === null) return;
+
+  const name = normName(raw);
+  if (!name) return;
+
+  const users = loadUsers();
+  const exists = users.some(
+    u => (u || "").toLowerCase() === name.toLowerCase()
+  );
+
+  if (exists){
+    alert("That user already exists.");
+    return;
+  }
+
+  users.push(name);
+  saveUsers(users);
+  localStorage.setItem(CURRENT_USER_KEY, name);
+
+  renderUserBadge(); // updates "User: NAME"
+});
+
 });
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
