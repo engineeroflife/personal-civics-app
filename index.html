@@ -557,6 +557,7 @@ main {
       const it = items[idx];
       cardNum.textContent = "#" + it.id;
       cardStar.classList.toggle('hidden', !it.starred);
+      practiceBadge.classList.toggle('hidden', !practiceIds.has(it.id));
       qText.textContent = it.question;
 
       aBox.innerHTML = it.answers.map(a => `
