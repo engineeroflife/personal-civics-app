@@ -337,6 +337,33 @@ header {
   width: auto;
   z-index: 10;
 }
+/* --- iPhone fix: keep Otter LEFT of title (not above) --- */
+.header{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+}
+
+/* If your .logo was set to position:absolute earlier, this overrides it */
+.header .logo{
+  position: static !important;
+  flex: 0 0 auto;
+  height: 96px;      /* adjust if you want */
+  width: auto;
+}
+
+.header .title-block{
+  flex: 1 1 auto;
+  text-align: left;
+  min-width: 0;
+}
+
+/* Optional: slightly smaller otter on small screens */
+@media (max-width: 520px){
+  .header .logo{ height: 76px; }
+  .header{ gap: 12px; }
+}
 
   </style>
 </head>
