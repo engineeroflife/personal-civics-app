@@ -1082,11 +1082,12 @@ btn.addEventListener("click", () => {
   users.push(name);
   saveUsers(users);
   localStorage.setItem(CURRENT_USER_KEY, name);
-
+  renderHeaderUser();
   renderUserBadge(); // updates "User: NAME"
+
 });
   
-renderHeaderUser();
+
 });
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
