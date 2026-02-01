@@ -1085,7 +1085,8 @@ btn.addEventListener("click", () => {
 
   renderUserBadge(); // updates "User: NAME"
 });
-
+  
+renderHeaderUser();
 });
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
@@ -1101,6 +1102,27 @@ function loadUsers(){
 
 function saveUsers(users){
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+function renderHeaderUser(){
+  const btn =
+    document.getElementById("addUserBtn") ||
+    document.querySelector(".add-user");
+  if (!btn) return;
+
+  let label = document.getElementById("headerUserLabel");
+  if (!label){
+    label = document.createElement("span");
+    label.id = "headerUserLabel";
+    label.style.marginLeft = "12px";
+    label.style.fontWeight = "600";
+    label.style.color = "#5b6472";
+    label.style.whiteSpace = "nowrap";
+
+    btn.insertAdjacentElement("afterend", label);
+  }
+
+  const name = localStorage.getItem(CURRENT_USER_KEY);
+  label.textContent = name ? `User: ${name}` : "User: —";
 }
 
 function setCurrentUser(name){
