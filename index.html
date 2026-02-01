@@ -518,6 +518,54 @@ header {
   </main>
 
   <script>
+    /* ===== Profiles (local) ===== */
+  const PROFILES_KEY = "civics_profiles_v1";
+
+  function profilesLoad(){
+    try {
+      return JSON.parse(localStorage.getItem(PROFILES_KEY)) || { activeId: null, profiles: {} };
+    } catch {
+      return { activeId: null, profiles: {} };
+    }
+  }
+
+  function profilesSave(store){
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(store));
+  }
+
+  function profilesEnsure(){
+    const store = profilesLoad();
+    if (!store.activeId || !store.profiles[store.activeId]) {
+      const id = (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : String(Date.now());
+      store.activeId = id;
+      store.profiles[id] = {
+        id,
+        name: "Me",
+        createdAt: Date.now(),
+        stats: { correct: 0, wrong: 0 }
+      };
+      profilesSave(store);
+    }
+    return store;
+  }
+
+  function profilesCreate(name){
+    const store = profilesEnsure();
+    const id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : String(Date.now());
+    store.profiles[id] = {
+      id,
+      name: (name || "New user").trim(),
+      createdAt: Date.now(),
+      stats: { correct: 0, wrong: 0 }
+    };
+    store.activeId = id;
+    profilesSave(store);
+    return id;
+  }
     // ===== Helpers: flash + lock + screen tint + vibration =====
     function lockButtons(btns, ms) {
       btns.forEach(b => { if (b) b.disabled = true; });
@@ -992,6 +1040,8 @@ header {
     setMode("cards");
     loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
     loadQuestions();
+    window.addEventListener("load", profilesEnsure);
+
   </script>
 </body>
 </html>
