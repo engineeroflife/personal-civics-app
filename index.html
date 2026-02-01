@@ -104,7 +104,7 @@
       padding-bottom: calc(18px + env(safe-area-inset-bottom));
     }
     .view{max-width:var(--max); margin:0 auto;}
-    #userPicker.hidden { display: none !important; }
+    .hidden{display:none !important;}
 
     .card{
       background:#fff;
@@ -380,18 +380,7 @@ header {
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
-        <div id="activeUserLabel" class="muted small"></div>
     </div>
-     <div id="userPicker" class="userPicker hidden" role="dialog" aria-modal="true">
-  <div class="userPickerCard">
-    <div class="userPickerTitle">Switch user</div>
-    <div id="userList" class="userList"></div>
-    <div class="userPickerActions">
-      <button id="closeUserPickerBtn" type="button">Close</button>
-    </div>
-  </div>
-</div>
-
   </div>
  </div>
  </header>
@@ -563,92 +552,21 @@ header {
     return store;
   }
 
-  function profilesCreate(name){function profilesCreate(name){
-  const clean = (name || "").trim().replace(/\s+/g, " ");
-  if (!clean) return null;
-
-  const store = profilesEnsure();
-  const wanted = normalizeName(clean);
-
-  // block duplicates (case-insensitive)
-  for (const pid in store.profiles){
-    const p = store.profiles[pid];
-    if (normalizeName(p.name) === wanted) return null;
-  }
-
-  const id = (window.crypto && crypto.randomUUID)
-    ? crypto.randomUUID()
-    : String(Date.now());
-
-  store.activeId = id;
-  store.profiles[id] = {
-    id,
-    name: clean,
-    createdAt: Date.now(),
-    stats: { correct: 0, wrong: 0 }
-  };
-
-  profilesSave(store);
-  return id;
-}
-
-    function renderActiveUser(){
-  const label = document.getElementById("activeUserLabel");
-  if (!label) return;
-
-  const store = profilesLoad();
-  const active = store.profiles[store.activeId];
-
-  label.textContent = (active && active.name) ? `User: ${active.name}` : "";
-}function profilesSetActive(id){
-  const store = profilesLoad();
-  if (store.profiles && store.profiles[id]) {
+  function profilesCreate(name){
+    const store = profilesEnsure();
+    const id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : String(Date.now());
+    store.profiles[id] = {
+      id,
+      name: (name || "New user").trim(),
+      createdAt: Date.now(),
+      stats: { correct: 0, wrong: 0 }
+    };
     store.activeId = id;
     profilesSave(store);
+    return id;
   }
-}
- function normalizeName(name){
-  return (name || "").trim().replace(/\s+/g, " ").toLowerCase();
-}
-   
-function openUserPicker(){
-  const picker = document.getElementById("userPicker");
-  const list = document.getElementById("userList");
-  if (!picker || !list) return;
-
-  const store = profilesLoad();
-  const profiles = Object.values(store.profiles || {});
-
-  // Sort by newest first (optional)
-  profiles.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-  list.innerHTML = "";
-
-  // Show each profile once (by id), but display clean name
-  profiles.forEach(p => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = p.name || "User";
-    btn.addEventListener("click", () => {
-      profilesSetActive(p.id);
-      renderActiveUser();
-      closeUserPicker();
-      // Reload so the app is clean for the new active user
-      location.reload();
-    });
-    list.appendChild(btn);
-  });
-
-  picker.classList.remove("hidden");
-}
-
-
-function closeUserPicker(){
-  const picker = document.getElementById("userPicker");
-  if (picker) picker.classList.add("hidden");
-}
-
-
     // ===== Helpers: flash + lock + screen tint + vibration =====
     function lockButtons(btns, ms) {
       btns.forEach(b => { if (b) b.disabled = true; });
@@ -1127,49 +1045,18 @@ if (addUserBtn) {
     const name = prompt("New user name?");
     if (!name) return;
 
-    const newId = profilesCreate(name);
+    profilesCreate(name);
 
-    if (!newId) {
-      alert("That user name already exists. Please choose a different name.");
-      return;
-    }
-
-    renderActiveUser();
-    alert(`User "${name}" created.`);
+    // Optional UX feedback
+    alert(`User "${name}" created. You can now switch users.`);
   });
 }
-
-/* ===== Switch User Popup Wiring ===== */
-const activeUserLabel = document.getElementById("activeUserLabel");
-if (activeUserLabel) {
-  activeUserLabel.title = "Tap to switch user";
-  activeUserLabel.addEventListener("click", openUserPicker);
-}
-
-const closeUserPickerBtn = document.getElementById("closeUserPickerBtn");
-if (closeUserPickerBtn) {
-  closeUserPickerBtn.addEventListener("click", closeUserPicker);
-}
-
-const userPicker = document.getElementById("userPicker");
-if (userPicker) {
-  userPicker.addEventListener("click", (e) => {
-    if (e.target === userPicker) closeUserPicker();
-  });
-}
-
-
 
     // Start
     setMode("cards");
     loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
-     window.addEventListener("load", () => {
-  profilesEnsure();
-  renderActiveUser();
-});  
-  loadQuestions();
-
-
+    loadQuestions();
+    window.addEventListener("load", profilesEnsure);
 
   </script>
 </body>
