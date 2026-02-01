@@ -1110,20 +1110,64 @@ function renderHeaderUser(){
     document.querySelector(".add-user");
   if (!btn) return;
 
-  let label = document.getElementById("headerUserLabel");
-  if (!label){
-    label = document.createElement("span");
-    label.id = "headerUserLabel";
-    label.style.marginLeft = "12px";
+  let wrap = document.getElementById("headerUserWrap");
+  if (!wrap){
+    wrap = document.createElement("span");
+    wrap.id = "headerUserWrap";
+    wrap.style.marginLeft = "12px";
+    wrap.style.display = "inline-flex";
+    wrap.style.alignItems = "center";
+    wrap.style.gap = "8px";
+    wrap.style.whiteSpace = "nowrap";
+
+    const label = document.createElement("span");
+    label.textContent = "User:";
     label.style.fontWeight = "600";
     label.style.color = "#5b6472";
-    label.style.whiteSpace = "nowrap";
 
-    btn.insertAdjacentElement("afterend", label);
+    const select = document.createElement("select");
+    select.id = "userSelect";
+    select.style.padding = "6px 10px";
+    select.style.borderRadius = "10px";
+    select.style.border = "1px solid rgba(0,0,0,.15)";
+    select.style.background = "white";
+    select.style.fontWeight = "600";
+
+    select.addEventListener("change", () => {
+      const chosen = select.value || "";
+      localStorage.setItem(CURRENT_USER_KEY, chosen);
+      renderUserBadge();
+      // keep header in sync (optional)
+      renderHeaderUser();
+    });
+
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+    btn.insertAdjacentElement("afterend", wrap);
   }
 
-  const name = localStorage.getItem(CURRENT_USER_KEY);
-  label.textContent = name ? `User: ${name}` : "User: —";
+  const select = document.getElementById("userSelect");
+  if (!select) return;
+
+  const users = loadUsers();
+  const current = localStorage.getItem(CURRENT_USER_KEY) || "";
+
+  // Rebuild options (prevents duplicates in menu)
+  select.innerHTML = "";
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = users.length ? "Select…" : "No users yet";
+  select.appendChild(placeholder);
+
+  for (const u of users){
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = u;
+    select.appendChild(opt);
+  }
+
+  // Select current user if present
+  select.value = users.includes(current) ? current : "";
 }
 
 function setCurrentUser(name){
