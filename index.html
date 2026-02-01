@@ -380,18 +380,7 @@ header {
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
-        <div id="activeUserLabel" class="muted small"></div>
     </div>
-     <div id="userPicker" class="userPicker hidden" role="dialog" aria-modal="true">
-  <div class="userPickerCard">
-    <div class="userPickerTitle">Switch user</div>
-    <div id="userList" class="userList"></div>
-    <div class="userPickerActions">
-      <button id="closeUserPickerBtn" type="button">Close</button>
-    </div>
-  </div>
-</div>
-
   </div>
  </div>
  </header>
@@ -578,54 +567,6 @@ header {
     profilesSave(store);
     return id;
   }
-    function renderActiveUser(){
-  const label = document.getElementById("activeUserLabel");
-  if (!label) return;
-
-  const store = profilesLoad();
-  const active = store.profiles[store.activeId];
-
-  label.textContent = (active && active.name) ? `User: ${active.name}` : "";
-}function profilesSetActive(id){
-  const store = profilesLoad();
-  if (store.profiles && store.profiles[id]) {
-    store.activeId = id;
-    profilesSave(store);
-  }
-}
-
-function openUserPicker(){
-  const picker = document.getElementById("userPicker");
-  const list = document.getElementById("userList");
-  if (!picker || !list) return;
-
-  const store = profilesLoad();
-  const profiles = Object.values(store.profiles || {});
-
-  list.innerHTML = "";
-
-  profiles.forEach(p => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = p.name || "User";
-    btn.addEventListener("click", () => {
-      profilesSetActive(p.id);
-      renderActiveUser();
-      closeUserPicker();
-      location.reload();
-    });
-    list.appendChild(btn);
-  });
-
-  picker.classList.remove("hidden");
-}
-
-function closeUserPicker(){
-  const picker = document.getElementById("userPicker");
-  if (picker) picker.classList.add("hidden");
-}
-
-
     // ===== Helpers: flash + lock + screen tint + vibration =====
     function lockButtons(btns, ms) {
       btns.forEach(b => { if (b) b.disabled = true; });
@@ -1105,40 +1046,17 @@ if (addUserBtn) {
     if (!name) return;
 
     profilesCreate(name);
-    renderActiveUser();
-  alert(`User "${name}" created.`);
+
+    alert(`User "${name}" created.`);
   });
 }
-/* ===== Switch User Popup Wiring ===== */
-const activeUserLabel = document.getElementById("activeUserLabel");
-if (activeUserLabel) {
-  activeUserLabel.title = "Tap to switch user";
-  activeUserLabel.addEventListener("click", openUserPicker);
-}
-
-const closeUserPickerBtn = document.getElementById("closeUserPickerBtn");
-if (closeUserPickerBtn) {
-  closeUserPickerBtn.addEventListener("click", closeUserPicker);
-}
-
-const userPicker = document.getElementById("userPicker");
-if (userPicker) {
-  userPicker.addEventListener("click", (e) => {
-    if (e.target === userPicker) closeUserPicker();
-  });
-}
-
 
 
     // Start
     setMode("cards");
     loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
     loadQuestions();
-   window.addEventListener("load", () => {
-  profilesEnsure();
-  renderActiveUser();
-});
-
+    window.addEventListener("load", profilesEnsure);
 
   </script>
 </body>
