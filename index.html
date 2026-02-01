@@ -404,6 +404,28 @@ main {
         <div id="result" class="result hidden"></div>
       </div>
     </section>
+    <!-- Practice List View -->
+<section id="practiceView" class="view hidden">
+  <div class="panel">
+    <div class="panelRow">
+      <div class="kpis">
+        <div class="kpi">Saved: <b id="practiceCount">0</b></div>
+      </div>
+      <div class="kpis">
+        <button id="startPracticeBtn" class="primary">Start Practice</button>
+        <button id="clearPracticeBtn" class="ghost">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="questionText" style="margin-bottom:10px;">Your Practice List</p>
+    <div id="practiceList" class="answers">
+      Loading…
+    </div>
+  </div>
+</section>
+
   </main>
 
   <script>
