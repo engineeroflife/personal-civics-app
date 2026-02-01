@@ -269,6 +269,61 @@
   height: 96px;
   width: auto;
 }
+/* --- FIX HEADER: keep it compact + centered --- */
+
+.wrap.brandRow{
+  display: flex;
+  flex-direction: column;   /* stack: flag row then brand row */
+  align-items: center;
+  gap: 10px;
+}
+
+/* keep the flag (bars) on its own row and centered */
+.brandLeft{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.flag{
+  display: flex;
+  flex-direction: column;   /* stack bars */
+  gap: 6px;
+  align-items: flex-start;  /* keep them aligned */
+}
+
+/* Bea + title row */
+.header{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* logo sizing */
+.logo{
+  height: 120px;
+  width: auto;
+  display: block;
+}
+
+/* title block */
+.title-block{
+  text-align: left;
+}
+
+.app-title{
+  margin: 0;
+  line-height: 1.1;
+}
+
+.app-subtitle{
+  margin-top: 6px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #5b6472;
+}
 
   </style>
 </head>
