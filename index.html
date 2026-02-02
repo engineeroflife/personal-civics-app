@@ -89,6 +89,24 @@
       font-size:.95rem;
       color:var(--ink);
     }
+    /* ===== User controls (Add User + dropdown together) ===== */
+.userControls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+.userControls select{
+  height:38px;
+  border:1px solid var(--stroke);
+  border-radius:12px;
+  background:#fff;
+  padding:0 12px;
+  font-size:.95rem;
+  color:var(--ink);
+}
+
     .toggle{
       display:flex; align-items:center; gap:8px;
       padding:0 10px;
@@ -382,7 +400,9 @@ header {
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
+        
         <button id="addUserBtn" class="add-user" type="button">+ Add User</button>
+        <span id="userDropdownMount"></span>
     </div>
   </div>
  </div>
