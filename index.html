@@ -426,7 +426,7 @@ header {
 <body>
   <div id="screenFlash" aria-hidden="true"></div>
 
-
+<header>
   <div class="wrap brandRow">
     <div class="brandLeft">
       <div class="flag" aria-hidden="true">
@@ -442,9 +442,10 @@ header {
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
 
-        <!-- User controls -->
         <div class="userControls">
-          <button id="addUserBtn" class="chipBtn add-user" type="button">+ Add User</button>
+          <button id="addUserBtn" class="chipBtn add-user" type="button">
+            + Add User
+          </button>
 
           <div class="userRow">
             <span class="muted"><b>User:</b></span>
@@ -457,35 +458,12 @@ header {
 
   <div class="wrap">
     <div class="controls">
-      <select id="mode">
-        <option value="cards">Flashcards</option>
-        <option value="interview">Interview Mode</option>
-        <option value="practice">Practice List</option>
-      </select>
-
-      <label class="toggle">
-        <input type="checkbox" id="starOnly" />
-        <span>⭐ Only</span>
-      </label>
-
-      <label class="toggle">
-        <input type="checkbox" id="shuffleMode" />
-        <span>🔁 Shuffle</span>
-      </label>
-
-      <select id="ttsSpeed">
-        <option value="normal">TTS Normal</option>
-        <option value="slow">TTS Slow</option>
-      </select>
-
-      <select id="ttsVoice">
-        <option value="">Voice (Auto)</option>
-      </select>
-
-      <button class="chipBtn" id="reloadBtn">Reload</button>
+      <!-- Flashcards / Shuffle / TTS / Reload -->
     </div>
   </div>
 </header>
+
+ 
 
 
 
