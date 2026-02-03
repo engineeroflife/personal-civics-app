@@ -855,7 +855,7 @@ header {
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
       try {
-        const res = await fetch("data/civics_128_2025.json", {
+       const res = await fetch("./data/civics_128_2025.json", {
           cache: "no-store",
           signal: controller.signal
         });
