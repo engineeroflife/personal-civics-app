@@ -842,44 +842,47 @@ header {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      try {
-    const url = new URL("data/civics_128_2025.json", window.location.href);
-const res = await fetch(url, {
+     try {
+  const url = new URL("./data/civics_128_2025.json", window.location.origin + window.location.pathname);
+  console.log("Loading questions from:", url.toString());
 
-          cache: "no-store",
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+  const res = await fetch(url, {
+    cache: "no-store",
+    signal: controller.signal
+  });
 
-        if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+  clearTimeout(timeoutId);
 
-        const json = await res.json();
-        if (!json.items || !Array.isArray(json.items)) {
-          throw new Error("JSON format error: expected { items: [...] }");
-        }
+  if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
-        payloadSource = json.source || "";
-        allItems = json.items;
+  const json = await res.json();
+  if (!json.items || !Array.isArray(json.items)) {
+    throw new Error("JSON format error: expected { items: [...] }");
+  }
 
-        applyFilter();
-        renderPracticeList();
+  payloadSource = json.source || "";
+  allItems = json.items;
 
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.error(err);
+  applyFilter();
+  renderPracticeList();
 
-        loadNotice.classList.remove('hidden');
-        loadNotice.innerHTML = `
-          <b>Questions file not found, blocked, or too slow.</b><br><br>
-          Expected path:<br>
-          <code>data/civics_128_2025.json</code><br><br>
-          Error:<br>
-          <code>${escapeHtml(err.name + ": " + err.message)}</code>
-        `;
-        qText.textContent = "Questions not loaded.";
-        progressText.textContent = "";
-        sourceText.textContent = "";
-      }
+} catch (err) {
+  clearTimeout(timeoutId);
+  console.error(err);
+
+  loadNotice.classList.remove('hidden');
+  loadNotice.innerHTML = `
+    <b>Questions file not found, blocked, or too slow.</b><br><br>
+    Expected path:<br>
+    <code>${escapeHtml(String(err && err.url ? err.url : ""))}</code><br><br>
+    Error:<br>
+    <code>${escapeHtml(err.name + ": " + err.message)}</code>
+  `;
+  qText.textContent = "Questions not loaded.";
+  progressText.textContent = "";
+  sourceText.textContent = "";
+}
+
     }
 
     // ---------- Flashcards Events ----------
