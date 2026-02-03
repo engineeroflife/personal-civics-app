@@ -863,36 +863,6 @@ header {
 
         if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
-const json = await res.json();
-
-// Accept multiple valid formats
-let items = [];
-
-if (Array.isArray(json)) {
-  items = json;
-} else if (Array.isArray(json.items)) {
-  items = json.items;
-} else if (Array.isArray(json.questions)) {
-  items = json.questions;
-} else {
-  throw new Error("Unrecognized JSON structure");
-}
-
-// Normalize field names
-allItems = items.map((item, i) => ({
-  id: item.id ?? i + 1,
-  question: item.question ?? item.q ?? "",
-  answer: item.answer ?? item.a ?? ""
-})).filter(x => x.question && x.answer);
-
-if (!allItems.length) {
-  throw new Error("No valid questions found in file");
-}
-
-payloadSource = json.source || "";
-
-applyFilter();
-renderPracticeList();
 
 
       } catch (err) {
@@ -1248,6 +1218,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Show badge on load/refresh
   renderUserBadge();
 });
+    document.addEventListener("DOMContentLoaded", () => {
+  loadQuestions();
+});
+
 
   </script>
 </body>
