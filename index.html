@@ -1382,6 +1382,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 })();
 
+   /* ===== DEBUG: prove JS is running + show fetch status ===== */
+window.addEventListener("error", (e) => {
+  const n = document.getElementById("loadNotice");
+  if (n) {
+    n.classList.remove("hidden");
+    n.innerHTML = `<b>JavaScript ERROR:</b><br><code>${(e.message || "unknown error")}</code>`;
+  }
+});
+
+window.addEventListener("unhandledrejection", (e) => {
+  const n = document.getElementById("loadNotice");
+  if (n) {
+    n.classList.remove("hidden");
+    n.innerHTML = `<b>Promise ERROR:</b><br><code>${String(e.reason)}</code>`;
+  }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const n = document.getElementById("loadNotice");
+  if (n) {
+    n.classList.remove("hidden");
+    n.innerHTML = `<b>JS is running.</b><br><code>URL: ${location.href}</code>`;
+  }
+
+  // test whether the JSON file is reachable
+  try {
+    const r = await fetch("./data/civics_128_2025.json", { cache: "no-store" });
+    const msg = `Fetch test: ${r.status} ${r.statusText}`;
+    if (n) n.innerHTML += `<br><code>${msg}</code>`;
+  } catch (err) {
+    if (n) n.innerHTML += `<br><code>Fetch test failed: ${err.name}: ${err.message}</code>`;
+  }
+});
+ 
   </script>
 </body>
 </html>
