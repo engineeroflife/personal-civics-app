@@ -106,22 +106,6 @@
   font-size:.95rem;
   color:var(--ink);
 }
-/* Add User button – compact and centered under subtitle */
-.addUserBtn{
-  display: inline-block;   /* critical: prevents full width */
-  width: auto !important;  /* overrides any 100% rules */
-  min-width: unset;
-  padding: 10px 18px;
-  margin: 10px auto 0 auto;
-  border-radius: 14px;
-  white-space: nowrap;
-}
-
-/* Center it under the subtitle */
-.app-subtitle + .addUserBtn{
-  display: block;
-  text-align: center;
-}
 
     .toggle{
       display:flex; align-items:center; gap:8px;
@@ -392,32 +376,6 @@ header {
   .header{ gap: 12px; }
   
 }
-    /* ===== USER CONTROLS FIX ===== */
-.userControls{
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-#addUserBtn{
-  display: inline-flex;
-  width: fit-content;
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-.userRow{
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#userSelect{
-  min-width: 180px;
-}
-
 
     
   </style>
@@ -426,45 +384,63 @@ header {
 <body>
   <div id="screenFlash" aria-hidden="true"></div>
 
-<header>
+  <header>
   <div class="wrap brandRow">
     <div class="brandLeft">
       <div class="flag" aria-hidden="true">
-        <span class="bar navy"></span>
+     <span class="bar navy"></span>
         <span class="bar red"></span>
-      </div>
+     </div>
     </div>
 
-    <div class="header">
-      <img src="assets/Otter_BEa_nov25_1.webp" class="logo" alt="Bea the Otter">
+   <div class="header">
+  <img src="assets/Otter_BEa_nov25_1.webp" class="logo" alt="Bea the Otter">
+
 
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
-
-        <div class="userControls">
-          <button id="addUserBtn" class="chipBtn add-user" type="button">
-            + Add User
-          </button>
-
-          <div class="userRow">
-            <span class="muted"><b>User:</b></span>
-            <select id="userSelect"></select>
-          </div>
-        </div>
-      </div>
+        
+        <button id="addUserBtn" class="add-user" type="button">+ Add User</button>
+        <span id="userDropdownMount"></span>
     </div>
   </div>
+ </div>
+ </header>
 
-  <div class="wrap">
-    <div class="controls">
-      <!-- Flashcards / Shuffle / TTS / Reload -->
-    </div>
+
+  <div class="controls">
+    <button id="addUserBtn" class="chipBtn add-user" type="button">+ Add User</button>
+<span id="userDropdownMount"></span>
+
+    <select id="mode">
+      <option value="cards">Flashcards</option>
+      <option value="interview">Interview Mode</option>
+      <option value="practice">Practice List</option>
+    </select>
+
+    <label class="toggle">
+      <input type="checkbox" id="starOnly" />
+      <span>⭐ Only</span>
+    </label>
+
+    <label class="toggle">
+      <input type="checkbox" id="shuffleMode" />
+      <span>🔁 Shuffle</span>
+    </label>
+
+    <select id="ttsSpeed" title="Text-to-speech speed">
+      <option value="normal">TTS Normal</option>
+      <option value="slow">TTS Slow</option>
+    </select>
+
+    <select id="ttsVoice" title="Voice">
+      <option value="">Voice (Auto)</option>
+    </select>
+
+    <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
   </div>
 </header>
-
- 
-
 
 
   <main>
@@ -853,56 +829,50 @@ header {
 
     // ---------- Data Load ----------
     async function loadQuestions() {
-  loadNotice.classList.add('hidden');
-  qText.textContent = "Loading questions…";
-  aBox.classList.add('hidden');
+      loadNotice.classList.add('hidden');
+      qText.textContent = "Loading questions…";
+      aBox.classList.add('hidden');
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-  try {
-    const res = await fetch("./data/civics_128_2025.json", {
-      cache: "no-store",
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
+      try {
+        const res = await fetch("data/civics_128_2025.json", {
+          cache: "no-store",
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
 
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+        if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
 
-    const json = await res.json();
-    if (!json.items || !Array.isArray(json.items)) {
-      throw new Error("JSON format error: expected { items: [...] }");
+        const json = await res.json();
+        if (!json.items || !Array.isArray(json.items)) {
+          throw new Error("JSON format error: expected { items: [...] }");
+        }
+
+        payloadSource = json.source || "";
+        allItems = json.items;
+
+        applyFilter();
+        renderPracticeList();
+
+      } catch (err) {
+        clearTimeout(timeoutId);
+        console.error(err);
+
+        loadNotice.classList.remove('hidden');
+        loadNotice.innerHTML = `
+          <b>Questions file not found, blocked, or too slow.</b><br><br>
+          Expected path:<br>
+          <code>data/civics_128_2025.json</code><br><br>
+          Error:<br>
+          <code>${escapeHtml(err.name + ": " + err.message)}</code>
+        `;
+        qText.textContent = "Questions not loaded.";
+        progressText.textContent = "";
+        sourceText.textContent = "";
+      }
     }
-
-    payloadSource = json.source || "";
-    allItems = json.items;
-
-    loadPracticeIds();
-    applyFilter();
-    renderPracticeList();
-    renderHeaderUser();
-
-  } catch (err) {
-    clearTimeout(timeoutId);
-    console.error(err);
-    
- // FORCE error to show in the big text too:
-    qText.textContent = "Questions NOT loaded: " + err.name + " - " + err.message;
-
-    loadNotice.classList.remove('hidden');
-    loadNotice.innerHTML = `
-      <b>Questions file not found or blocked.</b><br><br>
-      Expected path:<br>
-      <code>data/civics_128_2025.json</code><br><br>
-      Error:<br>
-      <code>${escapeHtml(err.name + ": " + err.message)}</code>
-    `;
-    progressText.textContent = "";
-    sourceText.textContent = "";
-  }
-}
-
-
 
     // ---------- Flashcards Events ----------
     flipBtn.addEventListener('click', () => {
@@ -1093,75 +1063,34 @@ header {
     shuffleModeEl.addEventListener('change', () => applyFilter());
     reloadBtn.addEventListener('click', () => loadQuestions());
     
-    /* ================================
-   CLEAN USER + STARTUP (REPLACES BROKEN USER CODE)
-   ================================ */
+    const USERS_KEY = "ctp_users";
+const CURRENT_USER_KEY = "ctp_current_user";
+// ✅ SINGLE Add User click handler (only one)
+document.addEventListener("click", (e) => {
+  const hit = e.target.closest("#addUserBtn, .add-user");
+  if (!hit) return;
 
-function renderHeaderUser(){
-  const store = profilesEnsure();
-  const select = document.getElementById("userSelect");
-  if (!select) return;
-
-  select.innerHTML = "";
-
-  const profiles = Object.values(store.profiles || {});
-  if (!profiles.length) {
-    const opt = document.createElement("option");
-    opt.value = "";
-    opt.textContent = "No users yet";
-    select.appendChild(opt);
-    return;
-  }
-
-  for (const p of profiles){
-    const opt = document.createElement("option");
-    opt.value = p.id;
-    opt.textContent = p.name || "User";
-    select.appendChild(opt);
-  }
-
-  // ensure activeId is valid
-  if (!store.activeId || !store.profiles[store.activeId]) {
-    store.activeId = profiles[0].id;
-    profilesSave(store);
-  }
-
-  select.value = store.activeId;
-}
-
-// + Add User
-document.getElementById("addUserBtn")?.addEventListener("click", () => {
   const raw = prompt("New user name?");
   if (raw === null) return;
 
-  const name = (raw || "").trim().replace(/\s+/g, " ");
+  const name = normName(raw);
   if (!name) return;
 
-  const store = profilesEnsure();
-  const exists = Object.values(store.profiles)
-    .some(p => (p.name || "").toLowerCase() === name.toLowerCase());
+  const users = loadUsers();
+  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
 
-  if (exists) return alert("That user already exists.");
+  if (exists){
+    alert("That user already exists.");
+    return;
+  }
 
-  profilesCreate(name);
-  renderHeaderUser();
+  users.push(name);
+  saveUsers(users);
+  localStorage.setItem(CURRENT_USER_KEY, name);
+
+  if (typeof renderHeaderUser === "function") renderHeaderUser();
+  if (typeof renderUserBadge === "function") renderUserBadge();
 });
-
-// user dropdown change
-document.getElementById("userSelect")?.addEventListener("change", (e) => {
-  const store = profilesEnsure();
-  const id = e.target.value;
-  if (!store.profiles[id]) return;
-  store.activeId = id;
-  profilesSave(store);
-});
-
-// Start (single start path)
-setMode("cards");
-loadPracticeIds();
-profilesEnsure();
-renderHeaderUser();
-loadQuestions();
 
 
     // Start
@@ -1199,7 +1128,18 @@ document.getElementById("addUserBtn") || document.querySelector(".add-user");
     wrap.style.gap = "8px";
     wrap.style.whiteSpace = "nowrap";
 
+    const label = document.createElement("span");
+    label.textContent = "User:";
+    label.style.fontWeight = "600";
+    label.style.color = "#5b6472";
 
+    const select = document.createElement("select");
+    select.id = "userSelect";
+    select.style.padding = "6px 10px";
+    select.style.borderRadius = "10px";
+    select.style.border = "1px solid rgba(0,0,0,.15)";
+    select.style.background = "white";
+    select.style.fontWeight = "600";
 
     select.addEventListener("change", () => {
       const chosen = select.value || "";
@@ -1240,15 +1180,43 @@ document.getElementById("addUserBtn") || document.querySelector(".add-user");
 
 function setCurrentUser(name){
   localStorage.setItem(CURRENT_USER_KEY, name);
-
+  renderUserBadge();
 }
 
 function getCurrentUser(){
   return localStorage.getItem(CURRENT_USER_KEY) || "";
 }
 
+/** Creates/updates a small "User: ___" badge at the bottom */
+function renderUserBadge(){
+  // If badge doesn't exist, create it
+  let badge = document.getElementById("currentUserBadge");
+  if (!badge){
+    badge = document.createElement("div");
+    badge.id = "currentUserBadge";
 
+    // Style: fixed at bottom, centered, clean
+    badge.style.position = "fixed";
+    badge.style.left = "50%";
+    badge.style.transform = "translateX(-50%)";
+    badge.style.bottom = "10px";
+    badge.style.zIndex = "9999";
+    badge.style.padding = "8px 12px";
+    badge.style.borderRadius = "999px";
+    badge.style.background = "rgba(246,247,249,.95)";
+    badge.style.border = "1px solid rgba(0,0,0,.10)";
+    badge.style.boxShadow = "0 10px 26px rgba(0,0,0,.10)";
+    badge.style.fontFamily = "inherit";
+    badge.style.fontSize = "14px";
+    badge.style.fontWeight = "700";
+    badge.style.color = "var(--navy, #0C1D3F)";
+    badge.style.pointerEvents = "none"; // doesn’t block clicks
 
+    document.body.appendChild(badge);
+  }
+
+  const name = getCurrentUser();
+  badge.textContent = name ? `User: ${name}` : "User: —";
 }
 
 /** Click flow for + Add User with duplicate blocking */
@@ -1280,144 +1248,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Show badge on load/refresh
   renderUserBadge();
 });
-    document.addEventListener("DOMContentLoaded", () => {
-  loadQuestions();
-});
-/* ================================
-   CLEAN USER CONTROLS OVERRIDE
-   Paste at VERY BOTTOM of <script>
-   ================================ */
-(function () {
-  // --- helper to wipe old event listeners by cloning nodes ---
-  function resetNode(id) {
-    const el = document.getElementById(id);
-    if (!el || !el.parentNode) return null;
-    const clone = el.cloneNode(true);
-    el.parentNode.replaceChild(clone, el);
-    return clone;
-  }
 
-  // reset to remove ALL previous listeners (fixes duplicates)
-  const addBtn = resetNode("addUserBtn");
-  const userSelect = resetNode("userSelect");
-
-  // If header HTML isn't updated yet, exit safely
-  if (!addBtn || !userSelect) return;
-
-  // --- build dropdown from profiles ---
-  function renderHeaderUser() {
-    const store = profilesEnsure();
-
-    userSelect.innerHTML = "";
-
-    const profiles = Object.values(store.profiles || {});
-    if (!profiles.length) {
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = "No users yet";
-      userSelect.appendChild(opt);
-      return;
-    }
-
-    for (const p of profiles) {
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = p.name || "User";
-      userSelect.appendChild(opt);
-    }
-
-    // ensure activeId is valid
-    if (!store.activeId || !store.profiles[store.activeId]) {
-      store.activeId = profiles[0].id;
-      profilesSave(store);
-    }
-
-    userSelect.value = store.activeId;
-  }
-
-  // --- add user button ---
-  addBtn.addEventListener("click", () => {
-    const raw = prompt("New user name?");
-    if (raw === null) return;
-
-    const name = (raw || "").trim().replace(/\s+/g, " ");
-    if (!name) return;
-
-    const store = profilesEnsure();
-    const exists = Object.values(store.profiles).some(
-      p => (p.name || "").toLowerCase() === name.toLowerCase()
-    );
-
-    if (exists) {
-      alert("That user already exists.");
-      return;
-    }
-
-    profilesCreate(name);
-    renderHeaderUser();
-  });
-
-  // --- change active user ---
-  userSelect.addEventListener("change", (e) => {
-    const id = e.target.value;
-    const store = profilesEnsure();
-    if (!store.profiles[id]) return;
-    store.activeId = id;
-    profilesSave(store);
-  });
-
-  // run once on load
-  renderHeaderUser();
-})();
-
-/* ===== REMOVE DUPLICATE HEADER (2 otters fix) ===== */
-(function () {
-  const headers = Array.from(document.querySelectorAll("header"));
-  if (headers.length < 2) return;
-
-  // Keep the header that contains the controls row
-  const keep = headers.find(h => h.querySelector(".controls")) || headers[0];
-
-  // Remove all other headers
-  headers.forEach(h => {
-    if (h !== keep) h.remove();
-  });
-})();
-
-   /* ===== DEBUG: prove JS is running + show fetch status ===== */
-window.addEventListener("error", (e) => {
-  const n = document.getElementById("loadNotice");
-  if (n) {
-    n.classList.remove("hidden");
-    n.innerHTML = `<b>JavaScript ERROR:</b><br><code>${(e.message || "unknown error")}</code>`;
-  }
-});
-
-window.addEventListener("unhandledrejection", (e) => {
-  const n = document.getElementById("loadNotice");
-  if (n) {
-    n.classList.remove("hidden");
-    n.innerHTML = `<b>Promise ERROR:</b><br><code>${String(e.reason)}</code>`;
-  }
-});
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const n = document.getElementById("loadNotice");
-  if (n) {
-    n.classList.remove("hidden");
-    n.innerHTML = `<b>JS is running.</b><br><code>URL: ${location.href}</code>`;
-  }
-
-  // test whether the JSON file is reachable
-  try {
-    const r = await fetch("./data/civics_128_2025.json", { cache: "no-store" });
-    const msg = `Fetch test: ${r.status} ${r.statusText}`;
-    if (n) n.innerHTML += `<br><code>${msg}</code>`;
-  } catch (err) {
-    if (n) n.innerHTML += `<br><code>Fetch test failed: ${err.name}: ${err.message}</code>`;
-  }
-});
- 
   </script>
 </body>
 </html>
