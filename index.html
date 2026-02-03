@@ -1321,6 +1321,19 @@ document.addEventListener("DOMContentLoaded", () => {
   renderHeaderUser();
 })();
 
+/* ===== REMOVE DUPLICATE HEADER (2 otters fix) ===== */
+(function () {
+  const headers = Array.from(document.querySelectorAll("header"));
+  if (headers.length < 2) return;
+
+  // Keep the header that contains the controls row
+  const keep = headers.find(h => h.querySelector(".controls")) || headers[0];
+
+  // Remove all other headers
+  headers.forEach(h => {
+    if (h !== keep) h.remove();
+  });
+})();
 
   </script>
 </body>
