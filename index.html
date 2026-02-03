@@ -1069,15 +1069,7 @@ header {
     shuffleModeEl.addEventListener('change', () => applyFilter());
     reloadBtn.addEventListener('click', () => loadQuestions());
     
-    const USERS_KEY = "ctp_users";
-const CURRENT_USER_KEY = "ctp_current_user";
- 
-    // Start
-    setMode("cards");
-    loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
-    loadQuestions();
-    window.addEventListener("load", profilesEnsure);
-
+   
 
 function normName(name){
   return (name || "").trim().replace(/\s+/g, " ");
@@ -1225,7 +1217,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderUserBadge();
 });
-  
+  // ===== FINAL BOOT SEQUENCE =====
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("addUserBtn");
+  if (btn) btn.addEventListener("click", addUserFlow);
+
+  renderHeaderUser();
+  renderUserBadge();
+
+  setMode("cards");
+  loadPracticeIds();
+  loadQuestions();
+});
+
   </script>
 </body>
 </html>
