@@ -1115,7 +1115,7 @@ document.getElementById("addUserBtn")
     select.addEventListener("change", () => {
       const chosen = select.value || "";
       localStorage.setItem(CURRENT_USER_KEY, chosen);
-      renderUserBadge();
+     
       // keep header in sync (optional)
       renderHeaderUser();
     });
@@ -1151,7 +1151,7 @@ document.getElementById("addUserBtn")
 
 function setCurrentUser(name){
   localStorage.setItem(CURRENT_USER_KEY, name);
-  renderUserBadge();
+ 
 }
 
 function getCurrentUser(){
@@ -1159,32 +1159,7 @@ function getCurrentUser(){
 }
 
 /** Creates/updates a small "User: ___" badge at the bottom */
-function renderUserBadge(){
-  // If badge doesn't exist, create it
-  let badge = document.getElementById("currentUserBadge");
-  if (!badge){
-    badge = document.createElement("div");
-    badge.id = "currentUserBadge";
 
-    // Style: fixed at bottom, centered, clean
-    badge.style.position = "fixed";
-    badge.style.left = "50%";
-    badge.style.transform = "translateX(-50%)";
-    badge.style.bottom = "10px";
-    badge.style.zIndex = "9999";
-    badge.style.padding = "8px 12px";
-    badge.style.borderRadius = "999px";
-    badge.style.background = "rgba(246,247,249,.95)";
-    badge.style.border = "1px solid rgba(0,0,0,.10)";
-    badge.style.boxShadow = "0 10px 26px rgba(0,0,0,.10)";
-    badge.style.fontFamily = "inherit";
-    badge.style.fontSize = "14px";
-    badge.style.fontWeight = "700";
-    badge.style.color = "var(--navy, #0C1D3F)";
-    badge.style.pointerEvents = "none"; // doesn’t block clicks
-
-    document.body.appendChild(badge);
-  }
 
   const name = getCurrentUser();
   badge.textContent = name ? `User: ${name}` : "User: —";
@@ -1215,7 +1190,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("addUserBtn");
   if (btn) btn.addEventListener("click", addUserFlow);
 
-  renderUserBadge();
+
 });
   // ===== FINAL BOOT SEQUENCE =====
 document.addEventListener("DOMContentLoaded", () => {
@@ -1223,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btn) btn.addEventListener("click", addUserFlow);
 
   renderHeaderUser();
-  renderUserBadge();
+
 
   setMode("cards");
   loadPracticeIds();
