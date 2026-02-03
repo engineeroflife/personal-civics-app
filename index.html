@@ -885,6 +885,9 @@ header {
   } catch (err) {
     clearTimeout(timeoutId);
     console.error(err);
+    
+ // FORCE error to show in the big text too:
+    qText.textContent = "Questions NOT loaded: " + err.name + " - " + err.message;
 
     loadNotice.classList.remove('hidden');
     loadNotice.innerHTML = `
@@ -894,7 +897,6 @@ header {
       Error:<br>
       <code>${escapeHtml(err.name + ": " + err.message)}</code>
     `;
-    qText.textContent = "Questions not loaded.";
     progressText.textContent = "";
     sourceText.textContent = "";
   }
