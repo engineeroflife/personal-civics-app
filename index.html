@@ -89,24 +89,6 @@
       font-size:.95rem;
       color:var(--ink);
     }
-    /* ===== User controls (Add User + dropdown together) ===== */
-.userControls{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:nowrap;
-}
-
-.userControls select{
-  height:38px;
-  border:1px solid var(--stroke);
-  border-radius:12px;
-  background:#fff;
-  padding:0 12px;
-  font-size:.95rem;
-  color:var(--ink);
-}
-
     .toggle{
       display:flex; align-items:center; gap:8px;
       padding:0 10px;
@@ -374,10 +356,8 @@ header {
 @media (max-width: 520px){
   .header .logo{ height: 76px; }
   .header{ gap: 12px; }
-  
 }
 
-    
   </style>
 </head>
 
@@ -400,9 +380,7 @@ header {
       <div class="title-block">
         <h1 class="app-title">Civics Practice</h1>
         <div class="app-subtitle">with Bea the Otter</div>
-        
         <button id="addUserBtn" class="add-user" type="button">+ Add User</button>
-        <span id="userDropdownMount"></span>
     </div>
   </div>
  </div>
@@ -410,9 +388,6 @@ header {
 
 
   <div class="controls">
-    <button id="addUserBtn" class="chipBtn add-user" type="button">+ Add User</button>
-<span id="userDropdownMount"></span>
-
     <select id="mode">
       <option value="cards">Flashcards</option>
       <option value="interview">Interview Mode</option>
@@ -1065,7 +1040,7 @@ header {
     
     const USERS_KEY = "ctp_users";
 const CURRENT_USER_KEY = "ctp_current_user";
-// ✅ SINGLE Add User click handler (only one)
+ // ✅ SINGLE Add User click handler (only one)
 document.addEventListener("click", (e) => {
   const hit = e.target.closest("#addUserBtn, .add-user");
   if (!hit) return;
@@ -1077,25 +1052,11 @@ document.addEventListener("click", (e) => {
   if (!name) return;
 
   const users = loadUsers();
-  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
-
-  if (exists){
-    alert("That user already exists.");
-    return;
-  }
-
-  users.push(name);
-  saveUsers(users);
-  localStorage.setItem(CURRENT_USER_KEY, name);
-
-  if (typeof renderHeaderUser === "function") renderHeaderUser();
-  if (typeof renderUserBadge === "function") renderUserBadge();
-});
-
+  const exists = users.some(u => (u || "").
 
     // Start
     setMode("cards");
-    loadPracticeIds();   
+    loadPracticeIds();   // ✅ must run before renderCard uses practiceIds
     loadQuestions();
     window.addEventListener("load", profilesEnsure);
 
