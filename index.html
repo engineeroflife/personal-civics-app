@@ -418,7 +418,6 @@ header {
 
 
 
-  <div class="controls">
     <select id="mode">
       <option value="cards">Flashcards</option>
       <option value="interview">Interview Mode</option>
@@ -1170,33 +1169,8 @@ function getCurrentUser(){
   badge.textContent = name ? `User: ${name}` : "User: —";
 }
 
-/** Click flow for + Add User with duplicate blocking */
-function addUserFlow(){
-  const raw = prompt("Enter a user name:");
-  if (raw === null) return;
 
-  const name = normName(raw);
-  if (!name) return;
-
-  const users = loadUsers();
-  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
-
-  if (exists){
-    alert("That user already exists. Please choose a different name.");
-    return;
-  }
-
-  users.push(name);
-  saveUsers(users);
-  setCurrentUser(name);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("addUserBtn");
-  if (btn) btn.addEventListener("click", addUserFlow);
-
-
-});
+);
   // ===== FINAL BOOT SEQUENCE =====
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("addUserBtn");
@@ -1209,6 +1183,109 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPracticeIds();
   loadQuestions();
 });
+    // ===== USERS (simple, no bottom badge) =====
+const USERS_KEY = "ctp_users";
+const CURRENT_USER_KEY = "ctp_current_user";
+
+function normName(name){
+  return (name || "").trim().replace(/\s+/g, " ");
+}
+
+function loadUsers(){
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveUsers(users){
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function setCurrentUser(name){
+  localStorage.setItem(CURRENT_USER_KEY, name);
+}
+
+function getCurrentUser(){
+  return localStorage.getItem(CURRENT_USER_KEY) || "";
+}
+
+function renderHeaderUser(){
+  const btn = document.getElementById("addUserBtn");
+  if (!btn) return;
+
+  let wrap = document.getElementById("headerUserWrap");
+  if (!wrap){
+    wrap = document.createElement("span");
+    wrap.id = "headerUserWrap";
+    wrap.style.marginLeft = "12px";
+    wrap.style.display = "inline-flex";
+    wrap.style.alignItems = "center";
+    wrap.style.gap = "8px";
+    wrap.style.whiteSpace = "nowrap";
+
+    const label = document.createElement("span");
+    label.textContent = "User:";
+    label.style.fontWeight = "600";
+    label.style.color = "#5b6472";
+
+    const select = document.createElement("select");
+    select.id = "userSelect";
+    select.style.padding = "6px 10px";
+    select.style.borderRadius = "10px";
+    select.style.border = "1px solid rgba(0,0,0,.15)";
+    select.style.background = "white";
+    select.style.fontWeight = "600";
+
+    select.addEventListener("change", () => {
+      setCurrentUser(select.value || "");
+    });
+
+    wrap.appendChild(label);
+    wrap.appendChild(select);
+    btn.insertAdjacentElement("afterend", wrap);
+  }
+
+  const select = document.getElementById("userSelect");
+  if (!select) return;
+
+  const users = loadUsers();
+  const current = getCurrentUser();
+
+  select.innerHTML = "";
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = users.length ? "Select…" : "No users yet";
+  select.appendChild(placeholder);
+
+  for (const u of users){
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = u;
+    select.appendChild(opt);
+  }
+
+  select.value = users.includes(current) ? current : "";
+}
+
+function addUserFlow(){
+  const raw = prompt("Enter a user name:");
+  if (raw === null) return;
+
+  const name = normName(raw);
+  if (!name) return;
+
+  const users = loadUsers();
+  const exists = users.some(u => (u || "").toLowerCase() === name.toLowerCase());
+  if (exists){
+    alert("That user already exists.");
+    return;
+  }
+
+  users.push(name);
+  saveUsers(users);
+  setCurrentUser(name);
+  renderHeaderUser();
+}
+
 
   </script>
 </body>
