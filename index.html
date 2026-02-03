@@ -1282,6 +1282,92 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("DOMContentLoaded", () => {
   loadQuestions();
 });
+/* ================================
+   CLEAN USER CONTROLS OVERRIDE
+   Paste at VERY BOTTOM of <script>
+   ================================ */
+(function () {
+  // --- helper to wipe old event listeners by cloning nodes ---
+  function resetNode(id) {
+    const el = document.getElementById(id);
+    if (!el || !el.parentNode) return null;
+    const clone = el.cloneNode(true);
+    el.parentNode.replaceChild(clone, el);
+    return clone;
+  }
+
+  // reset to remove ALL previous listeners (fixes duplicates)
+  const addBtn = resetNode("addUserBtn");
+  const userSelect = resetNode("userSelect");
+
+  // If header HTML isn't updated yet, exit safely
+  if (!addBtn || !userSelect) return;
+
+  // --- build dropdown from profiles ---
+  function renderHeaderUser() {
+    const store = profilesEnsure();
+
+    userSelect.innerHTML = "";
+
+    const profiles = Object.values(store.profiles || {});
+    if (!profiles.length) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "No users yet";
+      userSelect.appendChild(opt);
+      return;
+    }
+
+    for (const p of profiles) {
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name || "User";
+      userSelect.appendChild(opt);
+    }
+
+    // ensure activeId is valid
+    if (!store.activeId || !store.profiles[store.activeId]) {
+      store.activeId = profiles[0].id;
+      profilesSave(store);
+    }
+
+    userSelect.value = store.activeId;
+  }
+
+  // --- add user button ---
+  addBtn.addEventListener("click", () => {
+    const raw = prompt("New user name?");
+    if (raw === null) return;
+
+    const name = (raw || "").trim().replace(/\s+/g, " ");
+    if (!name) return;
+
+    const store = profilesEnsure();
+    const exists = Object.values(store.profiles).some(
+      p => (p.name || "").toLowerCase() === name.toLowerCase()
+    );
+
+    if (exists) {
+      alert("That user already exists.");
+      return;
+    }
+
+    profilesCreate(name);
+    renderHeaderUser();
+  });
+
+  // --- change active user ---
+  userSelect.addEventListener("change", (e) => {
+    const id = e.target.value;
+    const store = profilesEnsure();
+    if (!store.profiles[id]) return;
+    store.activeId = id;
+    profilesSave(store);
+  });
+
+  // run once on load
+  renderHeaderUser();
+})();
 
 
   </script>
