@@ -392,6 +392,32 @@ header {
   .header{ gap: 12px; }
   
 }
+    /* ===== USER CONTROLS FIX ===== */
+.userControls{
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+#addUserBtn{
+  display: inline-flex;
+  width: fit-content;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.userRow{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#userSelect{
+  min-width: 180px;
+}
+
 
     
   </style>
@@ -426,39 +452,67 @@ header {
      
   </div>
  </div>
- </header>
+ <header>
+  <div class="wrap brandRow">
+    <div class="brandLeft">
+      <div class="flag" aria-hidden="true">
+        <span class="bar navy"></span>
+        <span class="bar red"></span>
+      </div>
+    </div>
 
+    <div class="header">
+      <img src="assets/Otter_BEa_nov25_1.webp" class="logo" alt="Bea the Otter">
 
-  <div class="controls">
-    
-    <select id="mode">
-      <option value="cards">Flashcards</option>
-      <option value="interview">Interview Mode</option>
-      <option value="practice">Practice List</option>
-    </select>
+      <div class="title-block">
+        <h1 class="app-title">Civics Practice</h1>
+        <div class="app-subtitle">with Bea the Otter</div>
 
-    <label class="toggle">
-      <input type="checkbox" id="starOnly" />
-      <span>⭐ Only</span>
-    </label>
+        <!-- User controls -->
+        <div class="userControls">
+          <button id="addUserBtn" class="chipBtn add-user" type="button">+ Add User</button>
 
-    <label class="toggle">
-      <input type="checkbox" id="shuffleMode" />
-      <span>🔁 Shuffle</span>
-    </label>
+          <div class="userRow">
+            <span class="muted"><b>User:</b></span>
+            <select id="userSelect"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <select id="ttsSpeed" title="Text-to-speech speed">
-      <option value="normal">TTS Normal</option>
-      <option value="slow">TTS Slow</option>
-    </select>
+  <div class="wrap">
+    <div class="controls">
+      <select id="mode">
+        <option value="cards">Flashcards</option>
+        <option value="interview">Interview Mode</option>
+        <option value="practice">Practice List</option>
+      </select>
 
-    <select id="ttsVoice" title="Voice">
-      <option value="">Voice (Auto)</option>
-    </select>
+      <label class="toggle">
+        <input type="checkbox" id="starOnly" />
+        <span>⭐ Only</span>
+      </label>
 
-    <button class="chipBtn" id="reloadBtn" title="Reload questions">Reload</button>
+      <label class="toggle">
+        <input type="checkbox" id="shuffleMode" />
+        <span>🔁 Shuffle</span>
+      </label>
+
+      <select id="ttsSpeed">
+        <option value="normal">TTS Normal</option>
+        <option value="slow">TTS Slow</option>
+      </select>
+
+      <select id="ttsVoice">
+        <option value="">Voice (Auto)</option>
+      </select>
+
+      <button class="chipBtn" id="reloadBtn">Reload</button>
+    </div>
   </div>
 </header>
+
 
 
   <main>
@@ -847,41 +901,48 @@ header {
 
     // ---------- Data Load ----------
     async function loadQuestions() {
-      loadNotice.classList.add('hidden');
-      qText.textContent = "Loading questions…";
-      aBox.classList.add('hidden');
+  loadNotice.classList.add('hidden');
+  qText.textContent = "Loading questions…";
+  aBox.classList.add('hidden');
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      try {
-       const res = await fetch("./data/civics_128_2025.json", {
-          cache: "no-store",
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+  try {
+    const res = await fetch("./data/civics_128_2025.json", {
+      cache: "no-store",
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
 
-        if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
-
-
-      } catch (err) {
-        clearTimeout(timeoutId);
-        console.error(err);
-
-        loadNotice.classList.remove('hidden');
-        loadNotice.innerHTML = `
-          <b>Questions file not found, blocked, or too slow.</b><br><br>
-          Expected path:<br>
-          <code>data/civics_128_2025.json</code><br><br>
-          Error:<br>
-          <code>${escapeHtml(err.name + ": " + err.message)}</code>
-        `;
-        qText.textContent = "Questions not loaded.";
-        progressText.textContent = "";
-        sourceText.textContent = "";
-      }
+    const json = await res.json();
+    if (!json.items || !Array.isArray(json.items)) {
+      throw new Error("Invalid JSON format");
     }
+
+    payloadSource = json.source || "";
+    allItems = json.items;
+
+    loadPracticeIds();
+    applyFilter();
+    renderPracticeList();
+    renderHeaderUser();
+
+  } catch (err) {
+    clearTimeout(timeoutId);
+    console.error(err);
+
+    loadNotice.classList.remove('hidden');
+    loadNotice.innerHTML = `
+      <b>Questions not loaded</b><br><br>
+      <code>${err.message}</code>
+    `;
+    qText.textContent = "Questions not loaded.";
+  }
+}
+
 
     // ---------- Flashcards Events ----------
     flipBtn.addEventListener('click', () => {
