@@ -1166,12 +1166,7 @@ function getCurrentUser(){
 /** Creates/updates a small "User: ___" badge at the bottom */
 
 
-  const name = getCurrentUser();
-  badge.textContent = name ? `User: ${name}` : "User: —";
-}
-
-
-);
+  
   // ===== FINAL BOOT SEQUENCE =====
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("addUserBtn");
@@ -1286,9 +1281,7 @@ function addUserFlow(){
   setCurrentUser(name);
   renderHeaderUser();
 }
-window.addEventListener("DOMContentLoaded", () => {
-  loadQuestions();
-});
+
 
   </script>
 </body>
