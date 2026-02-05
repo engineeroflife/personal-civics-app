@@ -1285,7 +1285,21 @@ function addUserFlow(){
   renderHeaderUser();
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  // 🔊 Force voices to load (Safari/Chrome quirk)
+  const u = new SpeechSynthesisUtterance(" ");
+  speechSynthesis.speak(u);
+  speechSynthesis.cancel();
 
+  const btn = document.getElementById("addUserBtn");
+  if (btn) btn.addEventListener("click", addUserFlow);
+
+  renderHeaderUser();
+
+  setMode("cards");
+  loadPracticeIds();
+  loadQuestions();
+});
   </script>
 </body>
 </html>
