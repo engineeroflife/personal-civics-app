@@ -815,7 +815,22 @@ loadVoices();
     function ttsRate() {
       return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
     }
+document.addEventListener("DOMContentLoaded", () => {
+  
+  // 🔊 Force voices to load (Safari/Chrome quirk)
+  const u = new SpeechSynthesisUtterance(" ");
+  speechSynthesis.speak(u);
+  speechSynthesis.cancel();
 
+  const btn = document.getElementById("addUserBtn");
+  if (btn) btn.addEventListener("click", addUserFlow);
+
+  renderHeaderUser();
+
+  setMode("cards");
+  loadPracticeIds();
+  loadQuestions();
+});
     function speak(text) {
   if (!text) return;
   if (!window.speechSynthesis) return alert("Text-to-Speech is not available.");
