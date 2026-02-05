@@ -787,20 +787,53 @@ header {
       prevBtn.disabled = (idx === 0);
       nextBtn.disabled = (idx === items.length - 1);
     }
+// ===== Text-to-Speech Voices =====
+let voices = [];
 
+function loadVoices() {
+  voices = speechSynthesis.getVoices();
+  const select = document.getElementById("ttsVoice");
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Voice (Auto)</option>`;
+
+  voices
+    .filter(v => v.lang.startsWith("en"))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v.name;
+      opt.textContent = `${v.name} (${v.lang})`;
+      select.appendChild(opt);
+    });
+}
+
+// Some browsers load voices asynchronously
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+    
     function ttsRate() {
       return ttsSpeedEl.value === "slow" ? 0.80 : 0.95;
     }
 
     function speak(text) {
-      if (!text) return;
-      if (!window.speechSynthesis) return alert("Text-to-Speech is not available in this browser.");
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US";
-      u.rate = ttsRate();
-      speechSynthesis.speak(u);
-    }
+  if (!text) return;
+  if (!window.speechSynthesis) return alert("Text-to-Speech is not available.");
+
+  speechSynthesis.cancel();
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = ttsRate();
+
+  const selected = document.getElementById("ttsVoice")?.value;
+  if (selected) {
+    const v = voices.find(x => x.name === selected);
+    if (v) u.voice = v;
+  }
+
+  speechSynthesis.speak(u);
+}
 
     // ---------- Data Load ----------
     async function loadQuestions() {
