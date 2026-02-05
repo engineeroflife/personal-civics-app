@@ -842,10 +842,10 @@ header {
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
      try {
-  const url = new URL("./data/civics_128_2025.json", window.location.origin + window.location.pathname);
-  console.log("Loading questions from:", url.toString());
+  const url = new URL("data/civics_128_2025.json", document.baseURI);
+  console.log("Loading questions from:", url.href);
 
-  const res = await fetch(url, {
+  const res = await fetch(url.href, {
     cache: "no-store",
     signal: controller.signal
   });
@@ -867,16 +867,17 @@ header {
 
 } catch (err) {
   clearTimeout(timeoutId);
-  console.error(err);
+  console.error("loadQuestions failed:", err);
 
-  loadNotice.classList.remove('hidden');
+  loadNotice.classList.remove("hidden");
   loadNotice.innerHTML = `
-    <b>Questions file not found, blocked, or too slow.</b><br><br>
-    Expected path:<br>
-    <code>${escapeHtml(String(err && err.url ? err.url : ""))}</code><br><br>
-    Error:<br>
-    <code>${escapeHtml(err.name + ": " + err.message)}</code>
+    <b>Questions file not found, blocked, or invalid.</b><br><br>
+    <b>Loaded URL:</b><br>
+    <code>${escapeHtml(String(new URL("data/civics_128_2025.json", document.baseURI).href))}</code><br><br>
+    <b>Error:</b><br>
+    <code>${escapeHtml(String(err?.name || "Error") + ": " + String(err?.message || err))}</code>
   `;
+
   qText.textContent = "Questions not loaded.";
   progressText.textContent = "";
   sourceText.textContent = "";
